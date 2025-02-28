@@ -1,0 +1,27 @@
+.accordion__item:not(:last-child) {
+    @apply border-b-border dark:border-dark_border border-b border-solid;
+}
+
+.accordion__item--active .accordion__btn {
+    @apply text-primary dark:text-primary;
+}
+
+.accordion__item--active .accordion__content {
+    @apply opacity-100 duration-300 translate-x-0 max-h-full;
+}
+
+.accordion__item--active .accordion__content {
+    @apply opacity-100 duration-300 max-h-[50rem] translate-y-0;
+}
+
+.icon-fill {
+    fill: var(--icon-color);
+}
+
+.light .icon-fill {
+    --icon-color: #102D47;
+}
+
+.dark .icon-fill {
+    --icon-color: #ffffff;
+}
