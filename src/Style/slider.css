@@ -1,0 +1,37 @@
+/* fetures slider */
+.fetures .slick-prev:before,
+.fetures .slick-next:before {
+    @apply hidden;
+}
+
+.fetures .slick-prev{
+    @apply md:!left-47% !left-45% md:-bottom-1/4 -bottom-6;
+}
+
+.fetures .slick-next{
+    @apply md:!right-47% !right-45% md:-bottom-1/4 -bottom-6;
+}
+
+.fetures .slick-prev,
+.fetures .slick-next{
+    @apply !top-auto;
+}
+
+/* testimonial slider*/
+.testimonial .slick-prev:before,
+.testimonial .slick-next:before {
+    @apply hidden;
+}
+
+.testimonial .slick-prev{
+    @apply !right-8 !left-auto bottom-0 z-[9999];
+}
+
+.testimonial .slick-next{
+    @apply !right-0 bottom-0;
+}
+
+.testimonial .slick-prev,
+.testimonial .slick-next{
+    @apply !top-auto;
+}

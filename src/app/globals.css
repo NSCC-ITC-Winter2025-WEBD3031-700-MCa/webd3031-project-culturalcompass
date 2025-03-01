@@ -1,0 +1,114 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  body {
+    @apply text-base overflow-x-hidden font-normal;
+    -webkit-text-size-adjust: 100%;
+  }
+  html {
+    @apply dark:bg-darkmode overflow-x-hidden;
+  }
+
+  textarea,
+  input[type="text"],
+  input[type="number"],
+  input[type="email"],
+  input[type="tel"],
+  select {
+    @apply block outline-none text-base font-normal text-midnight_text m-0 rounded-[0.375rem] w-full placeholder:text-grey;
+  }
+
+  h1 {
+    @apply md:text-[50px] md:leading-[4.3rem] text-[28px] leading-[2.25rem] font-bold text-midnight_text dark:text-white;
+  }
+
+  .checkbox input {
+    @apply h-[18px] w-[18px]  bg-transparent focus:ring-0 focus:ring-offset-0;
+  }
+
+  h2 {
+    @apply md:text-[40px] leading-[3rem] text-2xl font-bold text-midnight_text dark:text-white;
+  }
+
+  h3 {
+    @apply md:text-[28px] leading-[2.25rem] text-lg font-bold text-white dark:text-primary;
+  }
+
+  h4 {
+    @apply text-2xl font-bold text-midnight_text dark:text-primary;
+  }
+
+  h5 {
+    @apply text-[22px] leading-[2rem] font-medium text-midnight_text dark:text-primary;
+  }
+
+  .m_icon {
+    @apply inline-block h-[3.8125rem] w-[3.4375rem] bg-no-repeat bg-cover object-cover;
+  }
+
+  .box_shadow {
+    @apply shadow-[0px_3px_20px_0px_#3B4B68];
+  }
+
+  .header_shadow {
+    @apply shadow-[0_2px_20px_rgba(0, 0, 0, 0.05)];
+  }
+
+  section {
+    @apply lg:py-12 py-10;
+  }
+
+  /* Default Button CSS Start */
+  .btn {
+    @apply relative border-0 z-[1] py-3 px-4 text-lg font-normal rounded-lg cursor-pointer no-underline bg-primary text-white before:content-[''] before:absolute before:-z-[1] after:content-[''] after:absolute after:-z-[1] hover:bg-blue-700;
+  }
+
+  /* White Button CSS Start */
+  .btn_white {
+    @apply relative z-[1] py-[0.85rem] px-[2.3rem] text-base font-normal rounded-[0.3125rem] cursor-pointer no-underline border-transparent border-2 bg-white text-primary before:content-[''] before:absolute before:-z-[1] after:content-[''] after:absolute after:-z-[1] hover:bg-transparent hover:border-white hover:border-2 hover:text-white;
+  }
+
+  /* transparent Button CSS Start */
+  .btn_trans {
+    @apply relative z-[1] py-[0.8rem] px-[2.3rem] text-base font-normal rounded-[0.3125rem] cursor-pointer no-underline border-2 border-solid border-white text-white before:content-[''] before:absolute before:-z-[1] after:content-[''] after:absolute after:-z-[1] hover:text-white hover:border-transparent hover:bg-white;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+.blog-details p,
+.blog-details hr {
+  @apply mb-8;
+}
+
+.blog-details hr {
+  @apply dark:border-dark_border;
+}
+
+.blog-details strong {
+  @apply font-bold dark:text-white;
+}
+
+.blog-details ul {
+  @apply mb-8 list-inside list-disc space-y-3;
+}
+
+.blog-details ol {
+  @apply mb-8 list-inside list-decimal space-y-3;
+}
+
+.blog-details h1 {
+  @apply mb-8 text-3xl font-bold text-midnight_text dark:text-white sm:text-4xl md:text-[40px] md:leading-[1.28];
+}
+
+.blog-details h2 {
+  @apply mb-8 text-2xl font-bold text-midnight_text dark:text-white sm:text-3xl md:text-[35px] md:leading-[1.28];
+}
+
+.blog-details h3 {
+  @apply mb-6 text-2xl font-bold dark:text-white sm:text-[28px] sm:leading-[40px];
+}
