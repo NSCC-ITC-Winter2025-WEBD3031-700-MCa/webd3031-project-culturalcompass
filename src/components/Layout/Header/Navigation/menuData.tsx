@@ -4,14 +4,6 @@ export const headerData: HeaderItem[] = [
   { label: "Destination", href: "/destination" },
   { label: "Features", href: "/features" },
   {
-    label: "Package",
-    href: "#",
-    submenu: [
-      { label: "Packages", href: "/tours" },
-      { label: "Package detail", href: "/tours/package_1" },
-    ],
-  },
-  {
     label: "Blog",
     href: "#",
     submenu: [
@@ -19,6 +11,4 @@ export const headerData: HeaderItem[] = [
       { label: "Blog detail", href: "/blog/blog_1" },
     ],
   },
-  { label: "Contact", href: "/contact" },
-  { label: "Documentation", href: "/documentation" },
 ];  

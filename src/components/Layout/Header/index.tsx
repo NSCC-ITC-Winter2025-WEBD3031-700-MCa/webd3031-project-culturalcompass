@@ -66,7 +66,7 @@ const Header: React.FC = () => {
 
   return (
     <header
-      className={`fixed h-24 top-0 py-1 z-50 w-full  transition-all ${sticky ? "shadow-lg dark:shadow-darkmd bg-white dark:bg-darkmode" : "shadow-none bg-transparent dark:bg-transparent"}`}
+      className={`fixed h-24 top-0 z-50 w-full  transition-all ${sticky ? "shadow-lg dark:shadow-darkmd bg-white dark:bg-darkmode" : "shadow-none bg-transparent dark:bg-transparent"}`}
     >
       <div className="container mx-auto lg:max-w-screen-xl md:max-w-screen-md flex items-center justify-between p-6">
         <Logo />
