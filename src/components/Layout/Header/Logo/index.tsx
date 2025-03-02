@@ -8,18 +8,18 @@ const Logo: React.FC = () => {
       <Image
         src="/images/logo/logo.svg"
         alt="logo"
-        width={160}
-        height={50}
-        style={{ width: 'auto', height: 'auto' }}
+        width={250}
+        height={40}
+        style={{ width: '250px', height: '70px' }}
         quality={100}
         className='dark:hidden'
       />
       <Image
         src="/images/logo/logo-white.svg"
         alt="logo"
-        width={160}
-        height={50}
-        style={{ width: 'auto', height: 'auto' }}
+        width={250}
+        height={40}
+        style={{ width: '250px', height: '70px' }}
         quality={100}
         className='dark:block hidden'
       />

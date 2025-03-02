@@ -4,7 +4,7 @@ import HeroSub from "@/components/SharedComponent/HeroSub";
 import { Metadata } from "next";
 import Destination from "@/components/Home/Destinations";
 export const metadata: Metadata = {
-    title: "Destination | Avenue",
+    title: "Destination | Culture Compass",
 };
 
 const page = () => {

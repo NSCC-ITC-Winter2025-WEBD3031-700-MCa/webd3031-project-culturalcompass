@@ -104,11 +104,6 @@ const Destination = () => {
             </div>
           </div>
         </div>
-        <div className="text-center mt-10">
-          <button className="text-primary border border-primary px-4 py-2 rounded-lg w-fit mx-auto hover:text-white hover:bg-primary">
-            View More
-          </button>
-        </div>
       </div>
     </section>
   );
