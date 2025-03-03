@@ -16,13 +16,13 @@ const PricingSection = () => {
   const plans = [
     {
       name: "Standard",
-      price: "$9.99",
+      price: "FREE",
       items: [true, false, false, false, false, false, false], 
     },
     {
       name: "Premium",
-      price: "$19.99",
-      items: [false, true, false, true, true, false, false, true, true, true], // Represents the availability of the features in the Premium plan
+      price: "$49.89",
+      items: [true, true, true, true, true, true, true, true], 
     },
     {
       name: "Deluxe",
