@@ -26,7 +26,7 @@ It's built with **Next.js**, **React**, and **Tailwind CSS**.
 
 ## Author
 **Linh Le, Maris, Utsav**
-*Students in second year at Nova Scotia Community College 2025*
+*Students in second year at Nova Scotia Community College 2025* 🎓🎓
 
 ## Getting Started
 
@@ -42,14 +42,21 @@ git clone https://github.com/yourusername/culture-compass.git
 ```
 
 Install the dependencies:
+
+1.  Install pnpm globally 
 ```bash
-npm install
+ npm install -g pnpm
+```
+Then, install the project dependencies using pnpm
+
+```bash
+pnpm install
 ```
 
 run the development server:
 
 ```bash
-npm run dev
+pnpm run dev
 ```
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
@@ -57,9 +64,9 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 If you'd like to contribute to Culture Compass, feel free to fork the repository, make changes, and submit pull requests. You can help by:
 
-Fixing bugs
-Adding new features
-Improving the UI
-Writing tests
+- Fixing bugs
+- Adding new features
+- Improving the UI
+- Writing tests
 
 
