@@ -1,16 +1,30 @@
+"use client"; // Ensure that this component is client-side
 
-"use client"; // Add this at the top of your file
-import { Countriess } from "@/app/api/data"; // Importing the data file
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation"; 
+import { Countriess } from "@/app/api/data"; 
 
 const Hero = () => {
   const [countryNames, setCountryNames] = useState<string[]>([]);
+  const [selectedCountry, setSelectedCountry] = useState<string>(''); // Start with an empty string
+  const router = useRouter(); 
 
   useEffect(() => {
-    // Extract country names from the imported JSON file
     const extractedCountries = Countriess[0].countries.map((country) => country.name);
     setCountryNames(extractedCountries);
-  }, []);
+
+    // Set the default selected country to the first country (Japan)
+    if (extractedCountries.length > 0) {
+      setSelectedCountry(extractedCountries[0]);
+    }
+  }, []); 
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (selectedCountry) {
+      router.push(`/showCountries?country=${selectedCountry}`);
+    }
+  };
 
   return (
     <section className="relative pt-24 bg-white dark:bg-gray-900 bg-contain text-white">
@@ -39,7 +53,7 @@ const Hero = () => {
               <h4 className="text-midnight_text text-2xl font-bold dark:text-white">
                 Plan your Vacation
               </h4>
-              <form>
+              <form onSubmit={handleSubmit}>
                 <div className="py-4 border-b border-border dark:border-dark_border">
                   <label htmlFor="destination" className="text-grey text-base font-normal">
                     Destination*
@@ -47,6 +61,9 @@ const Hero = () => {
                   <select
                     id="destination"
                     className="focus:outline-none w-full text-midnight_text dark:text-white text-xl font-medium dark:bg-darklight"
+                    value={selectedCountry}
+                    onChange={(e) => setSelectedCountry(e.target.value)}
+                    aria-label="Select a destination"
                   >
                     {countryNames.length > 0 ? (
                       countryNames.map((country, index) => (
@@ -76,5 +93,3 @@ const Hero = () => {
 };
 
 export default Hero;
-
-
