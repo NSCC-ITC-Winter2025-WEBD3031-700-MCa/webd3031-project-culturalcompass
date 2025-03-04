@@ -23,12 +23,7 @@ const PricingSection = () => {
       name: "Premium",
       price: "$49.89",
       items: [true, true, true, true, true, true, true, true], 
-    },
-    {
-      name: "Deluxe",
-      price: "$29.99",
-      items: [false, false, true, true, true, true, true, true, true, true], // Represents the availability of the features in the Deluxe plan
-    },
+    }
   ];
 
   return (
