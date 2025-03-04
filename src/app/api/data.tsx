@@ -5,6 +5,9 @@ export const Countriess = [
           {
             "name": "Japan",
             "language": "Japanese",
+            "flag": "/images/flag/japan.png",
+            "image": "/images/free-country-image/japan.jpg",
+            "description": "Japan's culture is a beautiful blend of tradition and modernity, shaped by centuries of history. Traditional arts like tea ceremonies, calligraphy, and Ikebana (flower arranging) reflect the Japanese appreciation for beauty, balance, and nature. In contrast, modern Japan is known for its technological advancements, pop culture (such as anime and manga), and a high standard of living. Despite rapid urbanization, Japan has maintained a strong connection to its natural surroundings and traditions, which continue to play a significant role in daily life.",
             "traditional_dress": "Kimono",
             "traditional_food": "Sushi, Ramen, Tempura",
             "traditional_activities": "Tea Ceremony, Sumo Wrestling, Hanami (Cherry Blossom Viewing)",
@@ -23,6 +26,9 @@ export const Countriess = [
           {
             "name": "France",
             "language": "French",
+            "flag": "/images/flag/france.svg",
+            "description": "France is known for its rich history in art, culture, and cuisine. French culture values elegance and sophistication, especially in fashion, cuisine, and the arts. Paris, often called the 'City of Light,' is renowned for its romantic atmosphere, world-class museums, and architectural beauty. France is also famous for its wine regions, historical landmarks like the Eiffel Tower and the Louvre, and its dedication to preserving its cultural heritage through festivals, opera, ballet, and theater. The French language, known for its beauty, is also a crucial part of the nation's identity, deeply tied to its literature, philosophy, and artistic expression.",
+            "image": "/images/free-country-image/france.jpg",
             "traditional_dress": "Breton Costume, Alsatian Dress",
             "traditional_food": "Baguette, Croissant, Coq au Vin",
             "traditional_activities": "Wine Tasting, Bastille Day Celebrations, Tour de France",
@@ -41,6 +47,9 @@ export const Countriess = [
           {
             "name": "India",
             "language": "Hindi, English",
+            "description": "India's culture is one of the oldest and most diverse in the world, shaped by centuries of history, religion, and traditions. It is a land of religious pluralism, with Hinduism, Buddhism, Islam, Sikhism, and other religions playing important roles in daily life. Indian festivals, such as Diwali, Holi, and Eid, are celebrated with great fervor and joy. Traditional Indian arts, such as classical music and dance (Bharatanatyam, Kathak), along with colorful handicrafts, reflect the country’s cultural richness. India’s cuisine is equally diverse, with every region offering distinct and flavorful dishes. The country places a strong emphasis on family values, respect for elders, and hospitality",
+            "flag": "/images/flag/india.svg",
+            "image": "/images/free-country-image/india.jpg",
             "traditional_dress": "Saree, Kurta-Pajama",
             "traditional_food": "Biryani, Dosa, Butter Chicken",
             "traditional_activities": "Yoga, Festivals like Diwali & Holi, Classical Dance",
@@ -59,6 +68,9 @@ export const Countriess = [
           {
             "name": "Canada",
             "language": "English, French",
+            "flag": "/images/flag/canada.svg",
+            "description": "Canada’s culture is a blend of diverse influences, shaped by its Indigenous peoples, French and British colonial history, and modern multiculturalism. It is known for its strong sense of social equality, inclusivity, and respect for cultural diversity. Canadians celebrate a wide range of cultural traditions, from the French-speaking Quebec to the diverse immigrant communities across the country. Canadian art, literature, and music are often shaped by its vast and varied landscape. Hockey is a national pastime, and festivals like Canada Day and multicultural celebrations demonstrate the country’s inclusive nature. Canada’s natural beauty, including its national parks and wildlife, is a key part of its national identity.",
+            "image": "/images/free-country-image/canada.jpg",
             "traditional_dress": "Inuit Parka, Scottish Kilts",
             "traditional_food": "Poutine, Butter Tarts, Maple Syrup",
             "traditional_activities": "Ice Hockey, Canoeing, Indigenous Pow Wows",
@@ -77,6 +89,9 @@ export const Countriess = [
           {
             "name": "Vietnam",
             "language": "Vietnamese",
+            "flag": "/images/flag/vietnam.png",
+            "description": "Vietnam has a rich cultural heritage influenced by thousands of years of history. Traditional Vietnamese culture is shaped by Confucianism, Buddhism, and Taoism, with a strong emphasis on family, respect for elders, and a deep reverence for ancestors. Vietnamese cuisine is famous for its balance of flavors, such as in dishes like pho and spring rolls. Traditional music, such as ca trù and nhã nhạc, and vibrant festivals like Tet (Lunar New Year) showcase the country's cultural diversity. The unique combination of French colonial architecture, ancient temples, and bustling cities creates a fascinating cultural landscape.",
+            "image": "/images/free-country-image/vietnam.jpg",
             "traditional_dress": "Áo dài",
             "traditional_food": "Pho, Banh Mi, Goi Cuon",
             "traditional_activities": "Water Puppetry, Tet Festival, Street Markets",
@@ -95,6 +110,9 @@ export const Countriess = [
           {
             "name": "Italy",
             "language": "Italian",
+            "flag": "/images/flag/italia.png",
+            "description": "Italy is renowned for its history, art, and cultural contributions to the world. The Italian Renaissance period, with figures like Leonardo da Vinci and Michelangelo, transformed Western art, science, and culture. Italian cuisine, with its pasta, pizza, and wine, has had a global impact, emphasizing simplicity and high-quality ingredients. Italians value family, community, and tradition, often gathering for large meals and celebrations. Festivals, such as Venice Carnival and Siena’s Palio, showcase Italy’s deep cultural roots and love for drama and spectacle.",
+            "image": "/images/free-country-image/italia.jpg",
             "traditional_dress": "Trentino Folk Costume",
             "traditional_food": "Pizza, Pasta, Risotto",
             "traditional_activities": "Opera, Carnivals, Vespa Riding",
@@ -113,6 +131,9 @@ export const Countriess = [
           {
             "name": "Brazil",
             "language": "Portuguese",
+            "flag": "/images/flag/brazil.svg",
+            "description": "Brazil is a vibrant, diverse country, rich in culture and traditions influenced by Indigenous, African, and Portuguese heritage. Brazilian culture is famous for its lively music and dance, particularly samba, bossa nova, and the energetic rhythms of Carnival, one of the world’s largest and most colorful festivals. Brazilian cuisine, such as feijoada and churrasco, reflects its diverse cultural influences. The country is also known for its passionate love for football (soccer), with the sport playing a central role in the national identity. Brazilian culture celebrates warmth, community, and a joyful approach to life, with strong family ties and a deep sense of pride in its heritage.",
+            "image": "/images/free-country-image/brazil.jpg",
             "traditional_dress": "Baiana Dress, Gaucho Outfit",
             "traditional_food": "Feijoada, Pão de Queijo, Churrasco",
             "traditional_activities": "Samba Dancing, Capoeira, Carnival Celebrations",
