@@ -34,7 +34,7 @@ const PricingSection = () => {
         </h2>
 
         {/* Pricing Plans Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 m-16">
           {plans.map((plan, index) => (
             <div key={index} className="bg-white dark:bg-darklight rounded-3xl shadow-2xl p-8 text-center">
               {/* Feature Name with Background */}
