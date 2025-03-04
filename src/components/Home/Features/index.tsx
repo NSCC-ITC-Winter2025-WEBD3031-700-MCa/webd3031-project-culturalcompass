@@ -64,9 +64,12 @@ const PricingSection = () => {
                   </li>
                 ))}
               </ul>
+              {plan.name !== "Standard" && (
               <button className="py-3 px-6 bg-primary hover:bg-blue-700 text-white rounded-lg">
-                Purchase Now
+              Purchase Now
               </button>
+              )}
+
             </div>
           ))}
         </div>
