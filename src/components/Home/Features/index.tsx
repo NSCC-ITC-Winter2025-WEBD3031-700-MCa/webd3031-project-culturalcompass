@@ -5,22 +5,19 @@ const PricingSection = () => {
   // Define the items that each package contains
   const features = [
     "Basic country information",
+    "Basic Customer Support",
     "More in-depth country information",
-    "Complete country details",
-    "Access to essential country details",
-    "Relatable country insights",
     "Relatable insights and recommendations",
-    "VIP customer support (priority)",
-    "Support via email",
-    "Email and chat support",
-    "7-day free trial"
+    "7-day free trial", 
+    "Shared customer experiences",
+    "Tips and hints for hidden gems",
   ];
 
   const plans = [
     {
       name: "Standard",
       price: "$9.99",
-      items: [true, false, false, true, false, false, false, true, false, true], // Represents the availability of the features in the Standard plan
+      items: [true, false, false, false, false, false, false], 
     },
     {
       name: "Premium",
