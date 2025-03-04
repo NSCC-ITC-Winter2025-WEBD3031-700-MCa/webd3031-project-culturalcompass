@@ -1,10 +1,21 @@
-import Image from "next/image";
+
+"use client"; // Add this at the top of your file
+import { Countriess } from "@/app/api/data"; // Importing the data file
+import { useState, useEffect } from "react";
 
 const Hero = () => {
+  const [countryNames, setCountryNames] = useState<string[]>([]);
+
+  useEffect(() => {
+    // Extract country names from the imported JSON file
+    const extractedCountries = Countriess[0].countries.map((country) => country.name);
+    setCountryNames(extractedCountries);
+  }, []);
+
   return (
-    <section className="relative pt-24 bg-white  dark:bg-gray-900 bg-contain text-white ">
+    <section className="relative pt-24 bg-white dark:bg-gray-900 bg-contain text-white">
       <div className="container mx-auto lg:max-w-screen-2xl md:max-w-screen-md lg:px-0 px-4 relative z-10">
-      <div className="absolute inset-0 bg-black opacity-40 rounded-lg"></div>
+        <div className="absolute inset-0 bg-black opacity-40 rounded-lg"></div>
         <div className="bg-[url('/images/hero/travel-bg.jpg')] bg-no-repeat bg-cover sm:p-24 p-10 px-4 bg-center rounded-3xl grid grid-cols-12">
           <div className="2xl:col-span-8 lg:col-span-6 col-span-12">
             <div className="flex flex-col h-full justify-end">
@@ -14,16 +25,8 @@ const Hero = () => {
                 data-aos-duration="1000"
                 className="text-white sm:text-[70px] sm:leading-[4.75rem] xl:text-[100px] xl:leading-[6.37rem] text-[58px] leading-[5.3rem] font-bold lg:text-left text-center sm:mb-8"
               >
-                 Your New Destination<span className="text-primary">.</span>
+                Your New Destination<span className="text-primary">.</span>
               </h1>
-              <div
-                className="flex lg:justify-start justify-center gap-4"
-                data-aos="fade-up"
-                data-aos-delay="300"
-                data-aos-duration="1000"
-              >
-               
-              </div>
             </div>
           </div>
           <div className="2xl:col-span-4 lg:col-span-6 col-span-12 lg:mt-0 mt-8">
@@ -38,31 +41,22 @@ const Hero = () => {
               </h4>
               <form>
                 <div className="py-4 border-b border-border dark:border-dark_border">
-                  <label
-                    htmlFor="destination"
-                    className="text-grey text-base font-normal "
-                  >
+                  <label htmlFor="destination" className="text-grey text-base font-normal">
                     Destination*
                   </label>
                   <select
                     id="destination"
                     className="focus:outline-none w-full text-midnight_text dark:text-white text-xl font-medium dark:bg-darklight"
                   >
-                    <option value="" className="text-base">
-                      Reykjavík, Iceland
-                    </option>
-                    <option value="" className="text-base">
-                      Vancouver, Canada
-                    </option>
-                    <option value="" className="text-base">
-                      Kyoto, Japan
-                    </option>
-                    <option value="" className="text-base">
-                      Lisbon, Portugal
-                    </option>
-                    <option value="" className="text-base">
-                      Barcelona, Spain
-                    </option>
+                    {countryNames.length > 0 ? (
+                      countryNames.map((country, index) => (
+                        <option key={index} value={country} className="text-base">
+                          {country}
+                        </option>
+                      ))
+                    ) : (
+                      <option>Loading...</option>
+                    )}
                   </select>
                 </div>
 
@@ -82,3 +76,5 @@ const Hero = () => {
 };
 
 export default Hero;
+
+
