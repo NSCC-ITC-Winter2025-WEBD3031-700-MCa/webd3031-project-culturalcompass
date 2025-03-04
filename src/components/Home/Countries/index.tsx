@@ -32,7 +32,7 @@ const PopularCountries = () => {
               <h3 className="text-midnight_text font-bold text-2xl mb-1 dark:text-white">
                 {item.name}
               </h3>
-              <p className="text-grey text-base">{item.offfers} Offers</p>
+              <p className="text-grey text-base mb-3 mr-4">{item.feature}</p>
             </div>
           ))}
         </div>
