@@ -6,6 +6,7 @@ import { headerData } from "../Header/Navigation/menuData";
 import Logo from "./Logo";
 import HeaderLink from "../Header/Navigation/HeaderLink";
 import MobileHeaderLink from "../Header/Navigation/MobileHeaderLink";
+import { useSession, signOut } from "next-auth/react";
 import Signin from "@/components/Auth/SignIn";
 import SignUp from "@/components/Auth/SignUp";
 import { useTheme } from "next-themes";
@@ -16,6 +17,7 @@ import { UserRegistered } from "@/components/Auth/AuthDialog/UserRegistered";
 import AuthDialogContext from "@/app/context/AuthDialogContext";
 
 const Header: React.FC = () => {
+  const { data: session } = useSession();
   const pathUrl = usePathname();
   const { theme, setTheme } = useTheme();
 
@@ -94,52 +96,71 @@ const Header: React.FC = () => {
               <path d="M16.6111 15.855C17.591 15.1394 18.3151 14.1979 18.7723 13.1623C16.4824 13.4065 14.1342 12.4631 12.6795 10.4711C11.2248 8.47905 11.0409 5.95516 11.9705 3.84818C10.8449 3.9685 9.72768 4.37162 8.74781 5.08719C5.7759 7.25747 5.12529 11.4308 7.29558 14.4028C9.46586 17.3747 13.6392 18.0253 16.6111 15.855Z" />
             </svg>
           </button>
-          <Link
-            href="#"
-            className="hidden lg:block bg-transparent border border-primary text-primary px-4 py-2 rounded-lg hover:bg-blue-600 hover:text-white"
-            onClick={() => {
-              setIsSignInOpen(true);
-            }}
-          >
-            Sign In
-          </Link>
+
+          {/* Conditionally Render Sign In / Sign Out Button */}
+          {!session ? (
+            <>
+              <Link
+                href="#"
+                className="hidden lg:block bg-transparent border border-primary text-primary px-4 py-2 rounded-lg hover:bg-blue-600 hover:text-white"
+                onClick={() => {
+                  setIsSignInOpen(true);
+                }}
+              >
+                Sign In
+              </Link>
+              <Link
+                href="#"
+                className="hidden lg:block bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                onClick={() => {
+                  setIsSignUpOpen(true);
+                }}
+              >
+                Sign Up
+              </Link>
+            </>
+          ) : (
+            <div className="flex items-center space-x-4">
+              <span className="text-lg text-primary">Welcome, {session.user?.name || 'User'}</span>
+              <button
+                onClick={() => signOut()}
+                className="hidden lg:block bg-primary text-white px-4 py-2 rounded-lg hover:bg-red-700"
+              >
+                Sign Out
+              </button>
+            </div>
+          )}
+
           {isSignInOpen && (
             <div ref={signInRef} className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center z-50 !m-0">
               <div className="relative mx-auto w-full max-w-md overflow-hidden rounded-lg bg-white px-8 py-14 text-center dark:bg-darklight">
-              <button
+                <button
                   onClick={() => setIsSignInOpen(false)}
-                  className=" hover:bg-gray-200 dark:hover:bg-gray-700 p-1 rounded-full absolute -top-5 -right-3 mr-8 mt-8"
+                  className="hover:bg-gray-200 dark:hover:bg-gray-700 p-1 rounded-full absolute -top-5 -right-3 mr-8 mt-8"
                   aria-label="Close Sign In Modal"
                 >
                   <Icon icon="ic:round-close" className="text-2xl dark:text-white" />
                 </button>
-                <Signin signInOpen = {(value:boolean) => setIsSignInOpen(value)} />
+                <Signin signInOpen={(value: boolean) => setIsSignInOpen(value)} />
               </div>
             </div>
           )}
-          <Link
-            href="#"
-            className="hidden lg:block bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-            onClick={() => {
-              setIsSignUpOpen(true);
-            }}
-          >
-            Sign Up
-          </Link>
+
           {isSignUpOpen && (
             <div ref={signUpRef} className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center z-50 !m-0">
               <div className="relative mx-auto w-full max-w-md overflow-hidden rounded-lg bg-white px-8 py-14 text-center dark:bg-darklight">
-              <button
+                <button
                   onClick={() => setIsSignUpOpen(false)}
-                  className=" hover:bg-gray-200 dark:hover:bg-gray-700 p-1 rounded-full absolute -top-5 -right-3 mr-8 mt-8"
-                  aria-label="Close Sign In Modal"
+                  className="hover:bg-gray-200 dark:hover:bg-gray-700 p-1 rounded-full absolute -top-5 -right-3 mr-8 mt-8"
+                  aria-label="Close Sign Up Modal"
                 >
                   <Icon icon="ic:round-close" className="text-2xl dark:text-white" />
                 </button>
-                <SignUp signUpOpen = {(value:boolean) => setIsSignUpOpen(value)} />
+                <SignUp signUpOpen={(value: boolean) => setIsSignUpOpen(value)} />
               </div>
             </div>
           )}
+
           <button
             onClick={() => setNavbarOpen(!navbarOpen)}
             className="block lg:hidden p-2 rounded-lg"
@@ -151,6 +172,7 @@ const Header: React.FC = () => {
           </button>
         </div>
       </div>
+
       {navbarOpen && (
         <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-40" />
       )}
@@ -179,41 +201,61 @@ const Header: React.FC = () => {
             <MobileHeaderLink key={index} item={item} />
           ))}
           <div className="mt-4 flex flex-col space-y-4 w-full">
-            <Link
-              href="#"
-              className="bg-transparent border border-primary text-primary px-4 py-2 rounded-lg hover:bg-blue-600 hover:text-white"
-              onClick={() => {
-                setIsSignInOpen(true);
-                setNavbarOpen(false);
-              }}
-            >
-              Sign In
-            </Link>
-            <Link
-              href="#"
-              className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-              onClick={() => {
-                setIsSignUpOpen(true);
-                setNavbarOpen(false);
-              }}
-            >
-              Sign Up
-            </Link>
+            {!session ? (
+              <>
+                <Link
+                  href="#"
+                  className="bg-transparent border border-primary text-primary px-4 py-2 rounded-lg hover:bg-blue-600 hover:text-white"
+                  onClick={() => {
+                    setIsSignInOpen(true);
+                    setNavbarOpen(false);
+                  }}
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="#"
+                  className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                  onClick={() => {
+                    setIsSignUpOpen(true);
+                    setNavbarOpen(false);
+                  }}
+                >
+                  Sign Up
+                </Link>
+              </>
+            ) : (
+              <>
+                <span className="text-lg text-primary">Welcome, {session.user?.name || 'User'}</span>
+                <button
+                  onClick={() => {
+                    signOut();
+                    setNavbarOpen(false);
+                  }}
+                  className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-red-700"
+                >
+                  Sign Out
+                </button>
+              </>
+            )}
           </div>
         </nav>
       </div>
-                  {/* Successsful Login Alert */}
-                  <div className={`fixed top-6 end-1/2 translate-x-1/2 z-50 ${authDialog?.isSuccessDialogOpen == true ? "block" : "hidden"}`}>
-       <SuccessfullLogin/>
-       </div>
+
+      {/* Successsful Login Alert */}
+      <div className={`fixed top-6 end-1/2 translate-x-1/2 z-50 ${authDialog?.isSuccessDialogOpen == true ? "block" : "hidden"}`}>
+        <SuccessfullLogin />
+      </div>
+
       {/* Failed Login Alert */}
-       <div className={`fixed top-6 end-1/2 translate-x-1/2 z-50 ${authDialog?.isFailedDialogOpen == true ? "block" : "hidden"}`}>
-       <FailedLogin/>
-       </div>
+      <div className={`fixed top-6 end-1/2 translate-x-1/2 z-50 ${authDialog?.isFailedDialogOpen == true ? "block" : "hidden"}`}>
+        <FailedLogin />
+      </div>
+
       {/* User registration Alert */}
-       <div className={`fixed top-6 end-1/2 translate-x-1/2 z-50 ${authDialog?.isUserRegistered == true ? "block" : "hidden"}`}>
-       <UserRegistered/>
-       </div>
+      <div className={`fixed top-6 end-1/2 translate-x-1/2 z-50 ${authDialog?.isUserRegistered == true ? "block" : "hidden"}`}>
+        <UserRegistered />
+      </div>
     </header>
   );
 };
