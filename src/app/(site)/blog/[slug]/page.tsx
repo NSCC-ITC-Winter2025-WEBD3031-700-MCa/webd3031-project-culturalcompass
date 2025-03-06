@@ -1,23 +1,17 @@
 import Blog from '@/components/SharedComponent/Blog'
-import { getAllPosts, getPostBySlug } from "@/utils/markdown";
+import { getPostBySlug } from "@/utils/markdown";
 import markdownToHtml from "@/utils/markdownToHtml";
 import { format } from "date-fns";
 import Image from "next/image";
 
-
-type Props = {
-  params: { slug: string };
+// Define the correct type for the "params" object
+type PostParams = {
+  slug: string;
 };
 
-export async function generateMetadata({ params }: any) {
-  const data = await params;
-  const posts = getAllPosts(["title", "date", "excerpt", "coverImage", "slug"]);
-  const post = getPostBySlug(data.slug, [
-    "title",
-    "author",
-    "content",
-    "metadata",
-  ]);
+export async function generateMetadata({ params }: { params: PostParams }) {
+  const { slug } = params;
+  const post = getPostBySlug(slug, ["title", "author", "content", "metadata"]);
 
   const siteName = process.env.SITE_NAME || "Your Site Name";
   const authorName = process.env.AUTHOR_NAME || "Your Author Name";
@@ -62,10 +56,9 @@ export async function generateMetadata({ params }: any) {
   }
 }
 
-export default async function Post({ params }: any) {
-  const data = await params;
-  const posts = getAllPosts(["title", "date", "excerpt", "coverImage", "slug"]);
-  const post = getPostBySlug(data.slug, [
+export default async function Post({ params }: { params: PostParams }) {
+  const { slug } = params;
+  const post = getPostBySlug(slug, [
     "title",
     "author",
     "authorImage",
@@ -74,11 +67,15 @@ export default async function Post({ params }: any) {
     "date",
   ]);
 
+  if (!post) {
+    return <div>Post not found!</div>;
+  }
+
   const content = await markdownToHtml(post.content || "");
 
   return (
     <>
-      <section className=" relative pt-44 bg-gradient-to-b from-white from-10% dark:from-darkmode to-herobg to-90% dark:to-semidark">
+      <section className="relative pt-44 bg-gradient-to-b from-white from-10% dark:from-darkmode to-herobg to-90% dark:to-semidark">
         <div className="container lg:max-w-screen-xl md:max-w-screen-md mx-auto lg:px-0 px-4">
           <div className="grid md:grid-cols-12 grid-cols-1 items-center">
             <div className="col-span-8">
@@ -92,18 +89,19 @@ export default async function Post({ params }: any) {
               </h2>
             </div>
             <div className="flex items-center md:justify-center justify-start gap-6 col-span-4 pt-4 md:pt-0">
-                <span className="text-[22px] leading-[2rem] font-bold text-midnight_text dark:text-white"> {post.author}</span>
-                <p className="text-xl text-gray dark:text-white">Author</p>
+              <span className="text-[22px] leading-[2rem] font-bold text-midnight_text dark:text-white">
+                {post.author}
+              </span>
+              <p className="text-xl text-gray dark:text-white">Author</p>
             </div>
           </div>
         </div>
       </section>
       <section className="pb-10 pt-20 dark:bg-darkmode lg:pb-20 lg:pt-32">
-        <div className="container lg:max-w-screen-xl md:max-w-screen-md mx-auto lg:px-0 px-4  ">
+        <div className="container lg:max-w-screen-xl md:max-w-screen-md mx-auto lg:px-0 px-4">
           <div className="-mx-4 flex flex-wrap justify-center">
             <div className="w-full px-4">
-              <div
-                className="z-20 mb-16 h-80 overflow-hidden rounded md:h-25 lg:h-31.25">
+              <div className="z-20 mb-16 h-80 overflow-hidden rounded md:h-25 lg:h-31.25">
                 <Image
                   src={post.coverImage}
                   alt="image"

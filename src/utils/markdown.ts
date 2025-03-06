@@ -4,7 +4,6 @@ import { join } from "path";
 
 const postsDirectory = join(process.cwd(), "markdown/Blog");
 
-
 export function getPostSlugs() {
   return fs.readdirSync(postsDirectory);
 }
@@ -15,26 +14,28 @@ export function getPostBySlug(slug: string, fields: string[] = []) {
   const fileContents = fs.readFileSync(fullPath, "utf8");
   const { data, content } = matter(fileContents);
 
+  // Define the Items type for the fields that will be added to the items object
   type Items = {
-    // [key: string]: string;
-    [key: string]: string | object;
+    [key: string]: string | object | undefined;  // Allowing undefined as a fallback when field doesn't exist
   };
 
-  const items: any = {};
+  // Initialize the items object with the type
+  const items: Items = {};
 
-  function processImages(content: string) {
+  // Function to process images in the content (optional)
+  function processImages(content: string): string {
     // You can modify this function to handle image processing
     // For example, replace image paths with actual HTML image tags
     return content.replace(/!\[.*?\]\((.*?)\)/g, '<img src="$1" alt="" />');
   }
 
-  // Ensure only the minimal needed data is exposed
+  // Populate the items object based on the fields array
   fields.forEach((field) => {
     if (field === "slug") {
       items[field] = realSlug;
     }
     if (field === "content") {
-      // You can modify the content here to include Images
+      // You can modify the content here to include images
       items[field] = processImages(content);
     }
 
@@ -55,7 +56,7 @@ export function getAllPosts(fields: string[] = []) {
   const slugs = getPostSlugs();
   const posts = slugs
     .map((slug) => getPostBySlug(slug, fields))
-    // sort posts by date in descending order
+    // Sort posts by date in descending order
     .sort((post1, post2) => (post1.date > post2.date ? -1 : 1));
 
   return posts;

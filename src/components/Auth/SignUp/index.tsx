@@ -1,18 +1,22 @@
-"use client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import SocialSignUp from "../SocialSignUp";
-import Logo from "@/components/Layout/Header/Logo"
+import Logo from "@/components/Layout/Header/Logo";
 import { useContext, useState } from "react";
 import Loader from "@/components/Common/Loader";
 import AuthDialogContext from "@/app/context/AuthDialogContext";
-const SignUp = ({signUpOpen}:{signUpOpen?:any}) => {
+
+type SignUpProps = {
+  signUpOpen?: (open: boolean) => void;
+};
+
+const SignUp = ({ signUpOpen }: SignUpProps) => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const authDialog = useContext(AuthDialogContext);
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     setLoading(true);
@@ -28,7 +32,7 @@ const SignUp = ({signUpOpen}:{signUpOpen?:any}) => {
       body: JSON.stringify(finalData),
     })
       .then((res) => res.json())
-      .then((data) => {
+      .then(() => {
         toast.success("Successfully registered");
         setLoading(false);
         router.push("/");
@@ -37,15 +41,15 @@ const SignUp = ({signUpOpen}:{signUpOpen?:any}) => {
         toast.error(err.message);
         setLoading(false);
       });
-      setTimeout(() => {
-        signUpOpen(false);
-      }, 1200);
-      authDialog?.setIsUserRegistered(true);
 
-      setTimeout(() => {
-        authDialog?.setIsUserRegistered(false);
-      }, 1100);
+    setTimeout(() => {
+      signUpOpen?.(false); // Close sign-up after successful registration
+    }, 1200);
+    authDialog?.setIsUserRegistered(true);
 
+    setTimeout(() => {
+      authDialog?.setIsUserRegistered(false);
+    }, 1100);
   };
 
   return (
@@ -84,7 +88,7 @@ const SignUp = ({signUpOpen}:{signUpOpen?:any}) => {
         </div>
         <div className="mb-[22px]">
           <input
-            type="text"
+            type="password"
             placeholder="Password"
             name="password"
             required
@@ -102,14 +106,14 @@ const SignUp = ({signUpOpen}:{signUpOpen?:any}) => {
       </form>
 
       <p className="text-body-secondary mb-4 text-base">
-        By creating an account you are agree with our{" "}
-        <a href="/#" className="text-primary hover:underline">
+        By creating an account you are agreeing with our{" "}
+        <Link href="/#" className="text-primary hover:underline">
           Privacy
-        </a>{" "}
+        </Link>{" "}
         and{" "}
-        <a href="/#" className="text-primary hover:underline">
+        <Link href="/#" className="text-primary hover:underline">
           Policy
-        </a>
+        </Link>
       </p>
 
       <p className="text-body-secondary text-base">

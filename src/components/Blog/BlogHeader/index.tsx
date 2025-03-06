@@ -1,5 +1,4 @@
-import { getAllPosts, getPostBySlug } from "@/utils/markdown";
-import markdownToHtml from "@/utils/markdownToHtml";
+import {  getPostBySlug } from "@/utils/markdown";
 import { format } from "date-fns";
 
 type Props = {
@@ -7,7 +6,6 @@ type Props = {
 };
 
 export async function generateMetadata({ params }: Props) {
-    const posts = getAllPosts(["title", "date", "excerpt", "coverImage", "slug"]);
     const post = getPostBySlug(params.slug, [
         "title",
         "author",
@@ -59,7 +57,6 @@ export async function generateMetadata({ params }: Props) {
 }
 
 export default async function BlogHead({ params }: Props) {
-    const posts = getAllPosts(["title", "date", "excerpt", "coverImage", "slug"]);
     const post = getPostBySlug(params.slug, [
         "title",
         "author",
@@ -69,7 +66,8 @@ export default async function BlogHead({ params }: Props) {
         "date",
     ]);
 
-    const content = await markdownToHtml(post.content || "");
+    // If you need the content later, uncomment this line
+    // const content = await markdownToHtml(post.content || "");
 
     return (
         <>
@@ -87,8 +85,8 @@ export default async function BlogHead({ params }: Props) {
                             </h2>
                         </div>
                         <div className="flex  gap-6 col-span-4 pt-4 md:pt-0">
-                                <span className="text-[22px] leading-[2rem] text-midnight_text">{post.authorName}</span>
-                                <p className="text-xl text-midnight_text">Author</p>
+                            <span className="text-[22px] leading-[2rem] text-midnight_text">{post.authorName}</span>
+                            <p className="text-xl text-midnight_text">Author</p>
                         </div>
                     </div>
                 </div>

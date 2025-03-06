@@ -9,14 +9,14 @@ import SessionProviderComp from "@/components/nextauth/SessionProvider";
 import { AuthDialogProvider } from "./context/AuthDialogContext";
 const dmsans = DM_Sans({ subsets: ["latin"] });
 import NextTopLoader from 'nextjs-toploader';
-
+import { Session } from "next-auth";
 
 export default function RootLayout({
   children,
   session,
 }: Readonly<{
   children: React.ReactNode;
-  session:any
+  session: Session | null; 
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>

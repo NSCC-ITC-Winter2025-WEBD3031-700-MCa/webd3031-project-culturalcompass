@@ -1,15 +1,13 @@
 "use client"
-import { use, useEffect, useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { HeaderItem } from '../../../../types/menu';
 import { usePathname } from 'next/navigation';
 
-
-
 const HeaderLink: React.FC<{ item: HeaderItem }> = ({ item }) => {
   const [submenuOpen, setSubmenuOpen] = useState(false);
-  const [menuItem , setMenuItem] = useState("");
-  let submenupath
+ 
+
 
   const path = usePathname()
   const handleMouseEnter = () => {
@@ -23,16 +21,11 @@ const HeaderLink: React.FC<{ item: HeaderItem }> = ({ item }) => {
   };
   
 
-   const handleRefresh = () => {
-    setMenuItem("");
-   }
-
 
   return (
     <li
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      onClick={handleRefresh}
       className={`${item?.submenu ? "relative" : ""}`}
     >
       <Link href={item.href} className={`text-base py-2 flex font-normal text-midnight_text hover:text-primary dark:hover:text-primary ${path === item.href ? 'text-primary' : ' text-black dark:text-white '} ${path.startsWith(`/${item.label.toLowerCase()}`) ? "!text-primary" : ""}`}>

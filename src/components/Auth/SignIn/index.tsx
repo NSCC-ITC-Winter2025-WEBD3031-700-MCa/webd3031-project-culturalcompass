@@ -1,25 +1,24 @@
 "use client";
-import { signIn, useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import SocialSignIn from "../SocialSignIn";
-import Logo from "@/components/Layout/Header/Logo"
-import Loader from "@/components/Common/Loader";
-import toast, { Toaster } from 'react-hot-toast';
+import Logo from "@/components/Layout/Header/Logo";
+import { Toaster, toast } from 'react-hot-toast'; // Fixed by using 'toast'
 import AuthDialogContext from "@/app/context/AuthDialogContext";
 
+// Proper typing for props
+interface SigninProps {
+  signInOpen?: (open: boolean) => void;
+}
 
-const Signin = ({signInOpen}:{signInOpen?:any}) => {
-  const { data: session } = useSession();
-  const [username, setUsername] = useState("admin");
-  const [password, setPassword] = useState("admin123");
-  const [error, setError] = useState("");
+const Signin = ({ signInOpen }: SigninProps) => {
+  const [username, setUsername] = useState<string>("admin");
+  const [password, setPassword] = useState<string>("admin123");
   const authDialog = useContext(AuthDialogContext);
 
-
-  const handleSubmit = async (e: any) => {
-    const notify = () => toast('Here is your toast.');
+  // Fixed 'any' by using FormEvent
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const result = await signIn("credentials", {
       redirect: false,
@@ -27,31 +26,28 @@ const Signin = ({signInOpen}:{signInOpen?:any}) => {
       password,
     });
     console.log(result);
-    if (result?.error) {
-      // Handle successful sign-in
-      setError(result.error);
-    }
-    if(result?.status === 200){
-       setTimeout(() => {
-        signInOpen(false);
-       }, 1200);
+
+    // Notify the user based on result status
+    if (result?.status === 200) {
+      setTimeout(() => {
+        signInOpen?.(false); // Close dialog
+      }, 1200);
+
       authDialog?.setIsSuccessDialogOpen(true);
       setTimeout(() => {
         authDialog?.setIsSuccessDialogOpen(false);
       }, 1100);
-    }else{
+      
+      toast.success("Login successful!"); // Show success message with toast
+    } else {
       authDialog?.setIsFailedDialogOpen(true);
       setTimeout(() => {
         authDialog?.setIsFailedDialogOpen(false);
       }, 1100);
+      
+      toast.error("Login failed. Please try again."); // Show error message with toast
     }
   };
-
-
-  
-
-
-
 
   return (
     <>
@@ -77,7 +73,7 @@ const Signin = ({signInOpen}:{signInOpen?:any}) => {
             required
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            className="w-full rounded-md border placeholder:text-gray-400  border-border dark:border-dark_border border-solid bg-transparent px-5 py-3 text-base text-dark outline-none transition  focus:border-primary focus-visible:shadow-none dark:border-border_color dark:text-white dark:focus:border-primary"
+            className="w-full rounded-md border placeholder:text-gray-400 border-border dark:border-dark_border border-solid bg-transparent px-5 py-3 text-base text-dark outline-none transition  focus:border-primary focus-visible:shadow-none dark:border-border_color dark:text-white dark:focus:border-primary"
           />
         </div>
         <div className="mb-[22px]">
@@ -98,7 +94,6 @@ const Signin = ({signInOpen}:{signInOpen?:any}) => {
             Sign In
             {/* {loading && <Loader />} */}
           </button>
-      
         </div>
       </form>
 
