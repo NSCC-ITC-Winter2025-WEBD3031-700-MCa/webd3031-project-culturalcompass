@@ -1,11 +1,11 @@
-import React from "react";
+import React, { FC } from "react";
 import Image from "next/image";
 import { Blog } from "@/types/blog";
 import { format } from "date-fns";
 import Link from "next/link";
 
 const BlogCard = ({ blog }: { blog: Blog }) => {
-    const { title, coverImage,  date, slug } = blog;
+    const { title, coverImage, excerpt, date, slug } = blog;
     return (
         <>
             <div className="group mb-0 relative">

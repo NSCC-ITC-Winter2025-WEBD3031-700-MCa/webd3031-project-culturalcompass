@@ -3,7 +3,7 @@ import BlogList from "@/components/Blog/BlogList";
 import HeroSub from "@/components/SharedComponent/HeroSub";
 import { Metadata } from "next";
 export const metadata: Metadata = {
-    title: "Blog | Culture Compass",
+    title: "Blog | Avenue",
 };
 
 const BlogPage = () => {
