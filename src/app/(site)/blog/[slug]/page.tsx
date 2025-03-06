@@ -5,13 +5,15 @@ import { format } from "date-fns";
 import Image from "next/image";
 
 // Define the correct type for the "params" object
-type PostParams = {
+interface PostParams {
   slug: string;
-};
+}
 
 export async function generateMetadata({ params }: { params: PostParams }) {
-  const { slug } = params;
-  const post = getPostBySlug(slug, ["title", "author", "content", "metadata"]);
+  // Await the params object here
+  const { slug } = await params; // Await the params object before using the properties
+  // Fetch post data asynchronously
+  const post = await getPostBySlug(slug, ["title", "author", "content", "metadata"]);
 
   const siteName = process.env.SITE_NAME || "Your Site Name";
   const authorName = process.env.AUTHOR_NAME || "Your Author Name";
@@ -57,8 +59,10 @@ export async function generateMetadata({ params }: { params: PostParams }) {
 }
 
 export default async function Post({ params }: { params: PostParams }) {
-  const { slug } = params;
-  const post = getPostBySlug(slug, [
+  // Await the params object here
+  const { slug } = await params; // Await the params object before using the properties
+  // Fetch post data asynchronously
+  const post = await getPostBySlug(slug, [
     "title",
     "author",
     "authorImage",
@@ -71,6 +75,7 @@ export default async function Post({ params }: { params: PostParams }) {
     return <div>Post not found!</div>;
   }
 
+  // Await the markdownToHtml function since it's asynchronous
   const content = await markdownToHtml(post.content || "");
 
   return (
