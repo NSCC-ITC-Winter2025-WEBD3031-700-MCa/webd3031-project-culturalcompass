@@ -26,7 +26,6 @@ const Header: React.FC = () => {
   const [isSignInOpen, setIsSignInOpen] = useState(false);
   const [isSignUpOpen, setIsSignUpOpen] = useState(false);
 
-  const navbarRef = useRef<HTMLDivElement>(null);
   const signInRef = useRef<HTMLDivElement>(null);
   const signUpRef = useRef<HTMLDivElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
@@ -35,26 +34,27 @@ const Header: React.FC = () => {
     setSticky(window.scrollY >= 80);
   };
 
-  const handleClickOutside = (event: MouseEvent) => {
-    if (signInRef.current && !signInRef.current.contains(event.target as Node)) {
-      setIsSignInOpen(false);
-    }
-    if (signUpRef.current && !signUpRef.current.contains(event.target as Node)) {
-      setIsSignUpOpen(false);
-    }
-    if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node) && navbarOpen) {
-      setNavbarOpen(false);
-    }
-  };
-
   useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (signInRef.current && !signInRef.current.contains(event.target as Node)) {
+        setIsSignInOpen(false);
+      }
+      if (signUpRef.current && !signUpRef.current.contains(event.target as Node)) {
+        setIsSignUpOpen(false);
+      }
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node) && navbarOpen) {
+        setNavbarOpen(false);
+      }
+    };
     window.addEventListener("scroll", handleScroll);
     document.addEventListener("mousedown", handleClickOutside);
+    
     return () => {
       window.removeEventListener("scroll", handleScroll);
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [navbarOpen, isSignInOpen, isSignUpOpen]);
+
 
   useEffect(() => {
     if (isSignInOpen || isSignUpOpen || navbarOpen) {

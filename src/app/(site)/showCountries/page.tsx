@@ -1,14 +1,33 @@
 "use client";
 
 import HeroSub from "@/components/SharedComponent/HeroSub";
-import { useEffect, useState, Suspense } from "react"; // Added Suspense import
+import { useEffect, useState, Suspense } from "react"; 
 import { useSearchParams } from "next/navigation";
 import { Countriess } from "@/app/api/data"; 
 import Image from "next/image";
 import Link from "next/link";
 
+// Define types for country data
+interface FamousPlace {
+  name: string;
+  review: string;
+}
+
+interface CountryDetails {
+  name: string;
+  description: string;
+  flag: string;
+  image: string;
+  language: string;
+  traditional_dress: string;
+  traditional_food: string;
+  traditional_activities: string;
+  national_anthem: string;
+  famous_places: FamousPlace[];
+}
+
 const ShowCountries = () => {
-  const [countryDetails, setCountryDetails] = useState<any>(null);
+  const [countryDetails, setCountryDetails] = useState<CountryDetails | null>(null);
   const searchParams = useSearchParams();
   const country = searchParams.get("country");
 
@@ -82,7 +101,7 @@ const ShowCountries = () => {
           <h2 className="text-2xl mt-8 mb-4">Famous Places</h2>
 
           <ul className="blur-sm">
-            {countryDetails.famous_places.map((place: any, index: number) => (
+            {countryDetails.famous_places.map((place: FamousPlace, index: number) => (
               <li className="blur-sm" key={index}>
                 <strong>{place.name}</strong>: {place.review}
               </li>

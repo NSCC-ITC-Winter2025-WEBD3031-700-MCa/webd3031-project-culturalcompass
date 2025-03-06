@@ -1,5 +1,4 @@
 "use client";
-import Image from "next/image";
 
 const PricingSection = () => {
   // Define the items that each package contains
