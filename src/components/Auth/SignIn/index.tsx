@@ -13,8 +13,8 @@ interface SigninProps {
 }
 
 const Signin = ({ signInOpen }: SigninProps) => {
-  const [username, setUsername] = useState<string>("admin");
-  const [password, setPassword] = useState<string>("admin123");
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
   const authDialog = useContext(AuthDialogContext);
 
   // Fixed 'any' by using FormEvent
