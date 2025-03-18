@@ -33,11 +33,11 @@ const PricingSection = () => {
     }
   ];
 
-  const handleCheckout = async (priceId) => {
+  const handleCheckout = async (priceId: string | null) => {
     if (!priceId) return; // Do nothing for free plan
-
+  
     const stripe = await stripePromise;
-    
+  
     const response = await fetch("/api/checkout-session", {
       method: "POST",
       headers: {
@@ -45,14 +45,14 @@ const PricingSection = () => {
       },
       body: JSON.stringify({ priceId }),
     });
-
+  
     const session = await response.json();
-
+  
     if (session.url) {
       window.location.href = session.url; // Redirect to Stripe Checkout
     }
   };
-
+  
   return (
     <section className="relative py-24 bg-white dark:bg-darkmode">
       <div className="container mx-auto lg:max-w-screen-xl md:max-w-screen-md lg:px-0 px-4">
