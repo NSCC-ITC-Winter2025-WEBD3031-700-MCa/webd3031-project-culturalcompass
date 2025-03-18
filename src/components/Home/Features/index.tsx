@@ -1,7 +1,13 @@
 "use client";
 
+import { loadStripe } from "@stripe/stripe-js";
+
+// Load Stripe with the publishable key
+// const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? "");
+
+
 const PricingSection = () => {
-  // Define the items that each package contains
   const features = [
     "Basic country information",
     "Basic Customer Support",
@@ -16,15 +22,37 @@ const PricingSection = () => {
     {
       name: "Standard",
       price: "FREE",
+      priceId: null, // No payment needed for free plan
       items: [true, false, false, false, false, false, false], 
     },
     {
       name: "Premium",
       price: "$49.89",
-      items: [true, true, true, true, true, true, true, true], 
+      priceId: "price_1R3Il8QQ6WgGmUw54ixVO56h", // Use your actual Price ID
+      items: [true, true, true, true, true, true, true], 
     }
   ];
 
+  const handleCheckout = async (priceId: string | null) => {
+    if (!priceId) return; // Do nothing for free plan
+  
+    const stripe = await stripePromise;
+  
+    const response = await fetch("/api/checkout-session", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ priceId }),
+    });
+  
+    const session = await response.json();
+  
+    if (session.url) {
+      window.location.href = session.url; // Redirect to Stripe Checkout
+    }
+  };
+  
   return (
     <section className="relative py-24 bg-white dark:bg-darkmode">
       <div className="container mx-auto lg:max-w-screen-xl md:max-w-screen-md lg:px-0 px-4">
@@ -32,11 +60,9 @@ const PricingSection = () => {
           Choose Your Plan
         </h2>
 
-        {/* Pricing Plans Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 m-16">
           {plans.map((plan, index) => (
             <div key={index} className="bg-white dark:bg-darklight rounded-3xl shadow-2xl p-8 text-center">
-              {/* Feature Name with Background */}
               <div className="bg-primary text-white py-2 px-4 rounded-full mb-4 inline-block">
                 <h3 className="text-2xl font-semibold dark:text-white">{plan.name}</h3>
               </div>
@@ -45,7 +71,6 @@ const PricingSection = () => {
               </p>
               <p className="text-lg text-gray-600 dark:text-gray-300 mb-6">One-time purchase</p>
 
-              {/* List of Features with Check or Cross */}
               <ul className="list-disc list-inside mb-6 text-left text-gray-600 dark:text-gray-300">
                 {features.map((feature, idx) => (
                   <li key={idx} className="mb-2 flex items-center">
@@ -59,11 +84,13 @@ const PricingSection = () => {
                 ))}
               </ul>
               {plan.name !== "Standard" && (
-              <button className="py-3 px-6 bg-primary hover:bg-blue-700 text-white rounded-lg">
-              Purchase Now
-              </button>
+                <button 
+                  className="py-3 px-6 bg-primary hover:bg-blue-700 text-white rounded-lg"
+                  onClick={() => handleCheckout(plan.priceId)}
+                >
+                  Purchase Now
+                </button>
               )}
-
             </div>
           ))}
         </div>
