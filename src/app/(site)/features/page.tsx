@@ -2,7 +2,7 @@
 import React from "react";
 import HeroSub from "@/components/SharedComponent/HeroSub";
 import { Metadata } from "next";
-import FeaturesSlider from "@/components/Home/Features";
+import FeaturesSlider from "@/components/Home/Features/PricingSection";
 export const metadata: Metadata = {
     title: "Features | Culture Compass",
 };
