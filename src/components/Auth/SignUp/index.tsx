@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import toast from "react-hot-toast";
+import toast from 'react-hot-toast';
 import SocialSignUp from "../SocialSignUp";
 import Logo from "@/components/Layout/Header/Logo";
 import { useContext, useState } from "react";
@@ -15,43 +15,133 @@ type SignUpProps = {
 const SignUp = ({ signUpOpen }: SignUpProps) => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({
+    name: '',
+    email: '',
+    password: '',
+  });
   const authDialog = useContext(AuthDialogContext);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  // Regex for basic email validation
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+  // Password strength validation
+  const isPasswordStrong = (password: string) => {
+    return /[a-z]/.test(password) && /[A-Z]/.test(password) && /[0-9]/.test(password) && password.length >= 8;
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+    console.log('Form submitted!');
     setLoading(true);
-    const data = new FormData(e.currentTarget);
-    const value = Object.fromEntries(data.entries());
-    const finalData = { ...value };
 
-    fetch("/api/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(finalData),
-    })
-      .then((res) => res.json())
-      .then(() => {
-        toast.success("Successfully registered");
-        setLoading(false);
-        router.push("/");
-      })
-      .catch((err) => {
-        toast.error(err.message);
-        setLoading(false);
+    // Reset errors before validation
+    setErrors({
+      name: '',
+      email: '',
+      password: '',
+    });
+
+    const data = new FormData(e.currentTarget);
+    const finalData = {
+      name: data.get("name"),
+      email: data.get("email"),
+      password: data.get("password"),
+    };
+
+    console.log('Final form data:', finalData); // Log the form data
+
+    // Validation before sending data
+    let isValid = true;
+
+    // Check if all fields are filled
+    if (!finalData.name || !finalData.email || !finalData.password) {
+      setErrors(prev => ({
+        ...prev,
+        name: finalData.name ? '' : 'Name is required.',
+        email: finalData.email ? '' : 'Email is required.',
+        password: finalData.password ? '' : 'Password is required.',
+      }));
+      toast.error("Please fill in all fields.");
+      console.log('Toast error triggered: Please fill in all fields.');
+      setLoading(false);
+      return;
+    }
+
+    // Validate email format
+    if (!emailRegex.test(finalData.email as string)) {
+      setErrors(prev => ({
+        ...prev,
+        email: 'Please enter a valid email address.',
+      }));
+      isValid = false;
+    }
+
+    // Validate password strength
+    if (!isPasswordStrong(finalData.password as string)) {
+      setErrors(prev => ({
+        ...prev,
+        password: 'Password must be at least 8 characters long, include uppercase, lowercase, and a number.',
+      }));
+      isValid = false;
+    }
+
+    if (!isValid) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/user", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(finalData),
       });
 
-    setTimeout(() => {
-      signUpOpen?.(false); // Close sign-up after successful registration
-    }, 1200);
-    authDialog?.setIsUserRegistered(true);
+      console.log("Response status:", res.status); // Log response status
 
-    setTimeout(() => {
-      authDialog?.setIsUserRegistered(false);
-    }, 1100);
+      const errorData = await res.json();
+      if (!res.ok) {
+        console.log("API Error Data:", errorData); // Log error data if any
+        if (errorData.field === "email") {
+          setErrors(prev => ({
+            ...prev,
+            email: errorData.message,
+          }));
+        } else if (errorData.field === "name") {
+          setErrors(prev => ({
+            ...prev,
+            name: errorData.message,
+          }));
+        } else {
+          toast.error(errorData.message || "An error occurred. Please try again.");
+          console.log('Toast error triggered:', errorData.message);
+        }
+      } else {
+        toast.success("Successfully registered.");
+        console.log("Registration successful! Redirecting...");
+
+        router.push("/");
+
+        if (signUpOpen) {
+          signUpOpen(false);
+        }
+
+        setTimeout(() => {
+          authDialog?.setIsUserRegistered(false);
+        }, 1100);
+      }
+    } catch (err: any) {
+      console.error("Registration error:", err);
+      toast.error("An error occurred. Please try again.");
+      console.log('Toast error triggered: An error occurred.');
+    } finally {
+      setLoading(false);
+    }
   };
+
 
   return (
     <>
@@ -77,7 +167,9 @@ const SignUp = ({ signUpOpen }: SignUpProps) => {
             required
             className="w-full rounded-md border border-border dark:border-dark_border border-solid bg-transparent px-5 py-3 text-base text-dark outline-none transition placeholder:text-gray-300 focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary"
           />
+          {errors.name && <p className="text-red-500 text-sm mt-2">{errors.name}</p>}
         </div>
+
         <div className="mb-[22px]">
           <input
             type="email"
@@ -86,7 +178,9 @@ const SignUp = ({ signUpOpen }: SignUpProps) => {
             required
             className="w-full rounded-md border border-border dark:border-dark_border border-solid bg-transparent px-5 py-3 text-base text-dark outline-none transition placeholder:text-gray-300 focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary"
           />
+          {errors.email && <p className="text-red-500 text-sm mt-2">{errors.email}</p>}
         </div>
+
         <div className="mb-[22px]">
           <input
             type="password"
@@ -95,11 +189,14 @@ const SignUp = ({ signUpOpen }: SignUpProps) => {
             required
             className="w-full rounded-md border border-border dark:border-dark_border border-solid bg-transparent px-5 py-3 text-base text-dark outline-none transition placeholder:text-gray-300 focus:border-primary focus-visible:shadow-none dark:text-white dark:focus:border-primary"
           />
+          {errors.password && <p className="text-red-500 text-sm mt-2">{errors.password}</p>}
         </div>
+
         <div className="mb-9">
           <button
             type="submit"
             className="flex w-full cursor-pointer items-center justify-center rounded-md bg-primary px-5 py-3 text-base text-white transition duration-300 ease-in-out hover:!bg-darkprimary dark:hover:!bg-darkprimary"
+            disabled={loading}
           >
             Sign Up {loading && <Loader />}
           </button>

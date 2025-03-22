@@ -18,7 +18,7 @@ importers:
         specifier: ^6.5.0
         version: 6.5.0(prisma@6.5.0(typescript@5.8.2))(typescript@5.8.2)
       '@stripe/stripe-js':
-        specifier: ^6.0.0
+        specifier: ^6.1.0
         version: 6.1.0
       aos:
         specifier: ^2.3.4
