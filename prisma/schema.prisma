@@ -27,16 +27,3 @@ model User {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 }
-model UserModel {
-  id                Int      @id @default(autoincrement())
-  email             String   @unique
-  username          String   @unique
-  password_hash     String?  // Nullable, since Google sign-in users won't have a password
-  google_id         String?  @unique // Unique, since it's only for Google sign-in
-  is_premium        Boolean  @default(false)
-  stripe_customer_id String?  @unique
-  subscription_status String? // Enum-like behavior in DB ('active', 'canceled', etc.)
-  isAdmin           Boolean  @default(false)
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-}
