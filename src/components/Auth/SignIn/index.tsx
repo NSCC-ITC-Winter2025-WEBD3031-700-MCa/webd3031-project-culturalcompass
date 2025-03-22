@@ -4,48 +4,54 @@ import Link from "next/link";
 import { useContext, useState } from "react";
 import SocialSignIn from "../SocialSignIn";
 import Logo from "@/components/Layout/Header/Logo";
-import { Toaster, toast } from 'react-hot-toast'; // Fixed by using 'toast'
 import AuthDialogContext from "@/app/context/AuthDialogContext";
+import { useRouter } from "next/navigation"; // Import useRouter for redirecting
 
-// Proper typing for props
 interface SigninProps {
   signInOpen?: (open: boolean) => void;
 }
 
 const Signin = ({ signInOpen }: SigninProps) => {
-  const [username, setUsername] = useState<string>("");
+  const [email, setEmail] = useState<string>(""); // Using email instead of username
   const [password, setPassword] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false); // Track loading state
+  const [error, setError] = useState<string | null>(null); // Track error message
   const authDialog = useContext(AuthDialogContext);
+  const router = useRouter(); // Router hook for redirection
 
-  // Fixed 'any' by using FormEvent
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true); // Start loading
+    setError(null); // Clear previous errors
     const result = await signIn("credentials", {
       redirect: false,
-      username,
+      email, // Send email instead of username
       password,
     });
-    console.log(result);
 
-    // Notify the user based on result status
+    setLoading(false); // End loading
+
+    // Handle the result of the sign-in
     if (result?.status === 200) {
+      // Close dialog after successful login
       setTimeout(() => {
-        signInOpen?.(false); // Close dialog
+        signInOpen?.(false);
       }, 1200);
 
       authDialog?.setIsSuccessDialogOpen(true);
       setTimeout(() => {
         authDialog?.setIsSuccessDialogOpen(false);
       }, 1100);
-      
-      toast.success("Login successful!"); // Show success message with toast
+
+      // Clear fields after success
+      setEmail("");
+      setPassword("");
+
+      // Redirect to homepage (or another page if needed)
+      router.push("/"); // Example redirection to home page
     } else {
-      authDialog?.setIsFailedDialogOpen(true);
-      setTimeout(() => {
-        authDialog?.setIsFailedDialogOpen(false);
-      }, 1100);
-      
-      toast.error("Login failed. Please try again."); // Show error message with toast
+      // Handle errors and set the error state
+      setError(result?.error || "Login failed. Please try again.");
     }
   };
 
@@ -62,18 +68,17 @@ const Signin = ({ signInOpen }: SigninProps) => {
         <span className="text-body-secondary relative z-10 inline-block bg-white px-3 text-base dark:bg-darklight">
           OR
         </span>
-        <Toaster />
       </span>
 
       <form onSubmit={handleSubmit}>
         <div className="mb-[22px]">
           <input
-            type="text"
-            placeholder="Username"
+            type="email" // Using email input instead of text
+            placeholder="Email"
             required
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="w-full rounded-md border placeholder:text-gray-400 border-border dark:border-dark_border border-solid bg-transparent px-5 py-3 text-base text-dark outline-none transition  focus:border-primary focus-visible:shadow-none dark:border-border_color dark:text-white dark:focus:border-primary"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full rounded-md border placeholder:text-gray-400 border-border dark:border-dark_border border-solid bg-transparent px-5 py-3 text-base text-dark outline-none transition focus:border-primary focus-visible:shadow-none dark:border-border_color dark:text-white dark:focus:border-primary"
           />
         </div>
         <div className="mb-[22px]">
@@ -83,16 +88,23 @@ const Signin = ({ signInOpen }: SigninProps) => {
             value={password}
             placeholder="Password"
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-md border border-border dark:border-dark_border border-solid bg-transparent px-5 py-3 text-base text-dark outline-none transition  focus:border-primary focus-visible:shadow-none dark:border-border_color dark:text-white dark:focus:border-primary"
+            className="w-full rounded-md border border-border dark:border-dark_border border-solid bg-transparent px-5 py-3 text-base text-dark outline-none transition focus:border-primary focus-visible:shadow-none dark:border-border_color dark:text-white dark:focus:border-primary"
           />
         </div>
+
+        {error && (
+          <div className="text-red-500 text-sm mb-4">
+            {error} {/* Display error message */}
+          </div>
+        )}
+
         <div className="mb-9">
           <button
             type="submit"
+            disabled={loading} // Disable button when loading
             className="flex w-full cursor-pointer items-center justify-center rounded-md border border-primary bg-primary hover:bg-darkprimary dark:hover:!bg-darkprimary px-5 py-3 text-base text-white transition duration-300 ease-in-out "
           >
-            Sign In
-            {/* {loading && <Loader />} */}
+            {loading ? "Signing In..." : "Sign In"}
           </button>
         </div>
       </form>
