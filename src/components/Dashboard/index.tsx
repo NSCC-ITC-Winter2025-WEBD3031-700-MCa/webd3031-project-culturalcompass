@@ -1,6 +1,9 @@
 import Image from 'next/image';
 
 const Dashboard = () => {
+
+
+  //if admin
   return (
     <section className="dark:bg-darkmode" id="destination">
       <div className="container mx-auto lg:max-w-screen-xl md:max-w-screen-md lg:px-0 px-4">
