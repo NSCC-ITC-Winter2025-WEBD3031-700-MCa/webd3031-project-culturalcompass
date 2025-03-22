@@ -2,7 +2,7 @@ import React from "react";
 import { Metadata } from "next";
 import Hero from "@/components/Home/Hero";
 import Destination from "@/components/Home/Destinations";
-import FeaturesSlider from "@/components/Home/Features";
+import FeaturesSlider from "@/components/Home/Features/PricingSection";
 import Blog from "@/components/SharedComponent/Blog";
 import PopularCountries from "@/components/Home/Countries";
 export const metadata: Metadata = {

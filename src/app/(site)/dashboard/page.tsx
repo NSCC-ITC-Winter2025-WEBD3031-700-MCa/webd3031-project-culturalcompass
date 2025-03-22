@@ -2,24 +2,26 @@
 import React from "react";
 import HeroSub from "@/components/SharedComponent/HeroSub";
 import { Metadata } from "next";
-import FeaturesSlider from "@/components/Home/Features/PricingSection";
+import Destination from "@/components/Home/Destinations";
+import Dashboard from "@/components/Home/Dashboard";
 export const metadata: Metadata = {
-    title: "Features | Culture Compass",
+    title: "Destination | Culture Compass",
 };
 
 const page = () => {
   const breadcrumbLinks = [
     { href: "/", text: "Home" },
-    { href: "/features", text: "Features" },
+    { href: "/dashboard", text: "Dashboard" },
   ];
   return (
     <>
       <HeroSub
-        title="Features"
+        title="Dashboard"
         description="Discover a wealth of insightful materials meticulously crafted to provide you with a comprehensive understanding of the latest trends."
         breadcrumbLinks={breadcrumbLinks}
+        
       />
-      <FeaturesSlider />
+      <Dashboard />
     </>
   );
 };
