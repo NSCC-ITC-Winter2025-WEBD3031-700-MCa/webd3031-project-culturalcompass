@@ -15,76 +15,65 @@ const handler = NextAuth({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
+
     // GitHub Provider
     GitHubProvider({
       clientId: process.env.GITHUB_ID,
       clientSecret: process.env.GITHUB_SECRET,
     }),
+
     // Credentials Provider (Custom SignIn)
     CredentialsProvider({
       name: 'credentials',
       credentials: {
-        username: { label: 'Username', type: 'text' },
+        email: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
-        if (!credentials?.username || !credentials?.password) {
-          return null; // If credentials are missing, return null
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error('Email and password are required'); // Provide proper error handling
         }
 
-        // Check if the user already exists in the database
-        try {
-          let user = await prisma.user.findUnique({
-            where: { username: credentials.username },
-          });
+        // Check if the user exists in the database by email
+        const existingUser = await prisma.user.findUnique({
+          where: { email: credentials.email },
+        });
 
-          // If user does not exist, create a new user
-          if (!user) {
-            const hashedPassword = await bcrypt.hash(credentials.password, 12);
-            user = await prisma.user.create({
-              data: {
-                username: credentials.username,
-                password_hash: hashedPassword,
-                email: credentials.username,
-                is_premium: false,
-                isAdmin: false,
-              },
-            });
-          }
-
-          const isPasswordValid = await bcrypt.compare(credentials.password, user.password_hash);
-
-          if (isPasswordValid) {
-            return { id: user.id, name: user.username, email: user.email };
-          } else {
-            return null;
-          }
-        } catch (error) {
-          console.error('Error during authentication:', error);
-          return null;
+        if (!existingUser) {
+          throw new Error('User not found. Please sign up first.');
         }
+
+        // If user exists, compare the password hash
+        const isValidPassword = await bcrypt.compare(credentials.password, existingUser.password);
+        if (!isValidPassword) {
+          throw new Error('Invalid Password');
+        }
+
+        // Return existing user info if login is successful
+        return { id: existingUser.id, email: existingUser.email, name: existingUser.name, isAdmin: existingUser.isAdmin };
       },
     }),
   ],
   session: {
-    strategy: 'jwt', 
+    strategy: 'jwt', // Use JWT for session strategy
   },
   callbacks: {
-    // SignIn callback for OAuth providers
+    // SignIn callback for OAuth providers (Google, GitHub)
     async signIn({ account, profile }) {
-      // Handle Google sign-in
       if (account.provider === 'google') {
-        const google_id = profile.id; // Get Google ID from profile
+        const google_id = profile.sub; // Google ID from profile
+
         const existingUser = await prisma.user.findUnique({
           where: { google_id },
         });
 
         if (!existingUser) {
+          // Optionally, you can create a new user here for the first time logging in with Google
           await prisma.user.create({
             data: {
               email: profile.email,
-              username: profile.name,
-              google_id: google_id,
+              name: profile.name,
+              google_id,
               is_premium: false,
               isAdmin: false,
             },
@@ -92,19 +81,20 @@ const handler = NextAuth({
         }
       }
 
-      // Handle GitHub sign-in
       if (account.provider === 'github') {
-        const github_id = profile.id; // Get GitHub ID from profile
+        const github_id = profile.id; // GitHub ID from profile
+
         const existingUser = await prisma.user.findUnique({
           where: { github_id },
         });
 
         if (!existingUser) {
+          // Optionally, you can create a new user here for the first time logging in with GitHub
           await prisma.user.create({
             data: {
               email: profile.email,
-              username: profile.login, // GitHub uses login as username
-              github_id: github_id,
+              name: profile.login,
+              github_id,
               is_premium: false,
               isAdmin: false,
             },
@@ -112,7 +102,7 @@ const handler = NextAuth({
         }
       }
 
-      return true; // Allow sign-in
+      return true; // Return true to allow the sign-in process
     },
 
     // JWT callback to include user info in the token
@@ -121,19 +111,20 @@ const handler = NextAuth({
         token.id = user.id;
         token.email = user.email;
         token.name = user.name;
-        token.isAdmin = user.isAdmin || false; // Add the isAdmin flag to the JWT token
+        token.isAdmin = user.isAdmin || false;
       }
-      return token;
+      return token; // Return the updated token with user data
     },
-  
-    // Session callback to pass user info to the session
+
+    // Session callback to attach user info from JWT to session
     async session({ session, token }) {
-      session.user.id = token.id;
-      session.user.email = token.email;
-      session.user.name = token.name;
-      session.user.isAdmin = token.isAdmin;  // Pass the isAdmin flag to the session
-  
-      return session;
+      if (token) {
+        session.user.id = token.id;
+        session.user.email = token.email;
+        session.user.name = token.name;
+        session.user.isAdmin = token.isAdmin;
+      }
+      return session; 
     },
   },
 });
