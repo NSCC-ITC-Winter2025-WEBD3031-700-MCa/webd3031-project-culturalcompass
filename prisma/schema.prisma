@@ -13,12 +13,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id                Int      @id @default(autoincrement())
-  email             String   @unique
-  username          String   @unique
-  password_hash     String?  // Nullable, since Google sign-in users won't have a password
-  google_id         String?  @unique // Unique, since it's only for Google sign-in
+model user {
+  id                Int      @id @default(autoincrement())  // Primary key with auto-increment
+  email             String  @unique
+  name              String   @unique
+  password    String?  // Nullable, since Google sign-in users won't have a password
+  google_id         String?  @unique // Unique for Google sign-in users
   github_id         Int? @unique
   is_premium        Boolean  @default(false)
   stripe_customer_id String?  @unique
