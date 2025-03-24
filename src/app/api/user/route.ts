@@ -15,6 +15,39 @@ const userSchema = z.object({
 
 const prisma = new PrismaClient();
 
+
+//Get Route for dashboard---------------
+export async function GET() {
+  try {
+    // Fetch users from the database
+    const users = await prisma.user.findMany({
+      select: {
+        name: true,
+        email: true,
+        is_premium: true,
+      },
+    });
+
+    // Return the users as a JSON response
+    return new Response(JSON.stringify({ users }), { status: 200 });
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    // Return a 500 status code if there's an error
+    return new Response(JSON.stringify({ error: "Failed to fetch users" }), { status: 500 });
+  } finally {
+    // Disconnect Prisma client to avoid connection leaks
+    await prisma.$disconnect();
+  }
+}
+//-------------------------------------
+
+
+
+
+
+
+
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
