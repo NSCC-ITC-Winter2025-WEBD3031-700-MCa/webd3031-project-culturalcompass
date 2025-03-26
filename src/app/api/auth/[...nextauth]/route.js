@@ -10,6 +10,17 @@ const prisma = new PrismaClient();
 export const authOptions = {
   site: process.env.NEXTAUTH_URL || 'http://localhost:3000',
   providers: [
+    // Google Provider
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    }),
+ 
+    // GitHub Provider
+    GitHubProvider({
+      clientId: process.env.GITHUB_ID,
+      clientSecret: process.env.GITHUB_SECRET,
+    }),
     // Credentials Provider
     CredentialsProvider({
       name: 'credentials',
@@ -46,6 +57,54 @@ export const authOptions = {
     strategy: 'jwt',
   },
   callbacks: {
+
+    // SignIn callback for OAuth providers (Google, GitHub)
+    async signIn({ account, profile }) {
+      if (account.provider === 'google') {
+        const google_id = profile.sub; // Google ID from profile
+ 
+        const existingUser = await prisma.user.findUnique({
+          where: { google_id },
+        });
+ 
+        if (!existingUser) {
+          // Optionally, you can create a new user here for the first time logging in with Google
+          await prisma.user.create({
+            data: {
+              email: profile.email,
+              name: profile.name,
+              google_id,
+              is_premium: false,
+              isAdmin: false,
+            },
+          });
+        }
+      }
+ 
+      if (account.provider === 'github') {
+        const github_id = profile.id; // GitHub ID from profile
+ 
+        const existingUser = await prisma.user.findUnique({
+          where: { github_id },
+        });
+ 
+        if (!existingUser) {
+          // Optionally, you can create a new user here for the first time logging in with GitHub
+          await prisma.user.create({
+            data: {
+              email: profile.email,
+              name: profile.login,
+              github_id,
+              is_premium: false,
+              isAdmin: false,
+            },
+          });
+        }
+      }
+ 
+      return true; // Return true to allow the sign-in process
+    },
+ 
     // JWT callback to include user info in the token
     async jwt({ token, user }) {
       if (user) {
