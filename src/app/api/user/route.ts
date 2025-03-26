@@ -25,6 +25,7 @@ export async function GET() {
         name: true,
         email: true,
         is_premium: true,
+        createdAt: true,
       },
     });
 

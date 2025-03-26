@@ -7,22 +7,10 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-const handler = NextAuth({
+export const authOptions = {
   site: process.env.NEXTAUTH_URL || 'http://localhost:3000',
   providers: [
-    // Google Provider
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    }),
-
-    // GitHub Provider
-    GitHubProvider({
-      clientId: process.env.GITHUB_ID,
-      clientSecret: process.env.GITHUB_SECRET,
-    }),
-
-    // Credentials Provider (Custom SignIn)
+    // Credentials Provider
     CredentialsProvider({
       name: 'credentials',
       credentials: {
@@ -31,7 +19,7 @@ const handler = NextAuth({
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error('Email and password are required'); // Provide proper error handling
+          throw new Error('Email and password are required');
         }
 
         // Check if the user exists in the database by email
@@ -49,71 +37,24 @@ const handler = NextAuth({
           throw new Error('Invalid Password');
         }
 
-        // Return existing user info if login is successful
+        // Return user info including isAdmin
         return { id: existingUser.id, email: existingUser.email, name: existingUser.name, isAdmin: existingUser.isAdmin };
       },
     }),
   ],
   session: {
-    strategy: 'jwt', // Use JWT for session strategy
+    strategy: 'jwt',
   },
   callbacks: {
-    // SignIn callback for OAuth providers (Google, GitHub)
-    async signIn({ account, profile }) {
-      if (account.provider === 'google') {
-        const google_id = profile.sub; // Google ID from profile
-
-        const existingUser = await prisma.user.findUnique({
-          where: { google_id },
-        });
-
-        if (!existingUser) {
-          // Optionally, you can create a new user here for the first time logging in with Google
-          await prisma.user.create({
-            data: {
-              email: profile.email,
-              name: profile.name,
-              google_id,
-              is_premium: false,
-              isAdmin: false,
-            },
-          });
-        }
-      }
-
-      if (account.provider === 'github') {
-        const github_id = profile.id; // GitHub ID from profile
-
-        const existingUser = await prisma.user.findUnique({
-          where: { github_id },
-        });
-
-        if (!existingUser) {
-          // Optionally, you can create a new user here for the first time logging in with GitHub
-          await prisma.user.create({
-            data: {
-              email: profile.email,
-              name: profile.login,
-              github_id,
-              is_premium: false,
-              isAdmin: false,
-            },
-          });
-        }
-      }
-
-      return true; // Return true to allow the sign-in process
-    },
-
     // JWT callback to include user info in the token
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
         token.email = user.email;
         token.name = user.name;
-        token.isAdmin = user.isAdmin || false;
+        token.isAdmin = user.isAdmin || false;  // Ensure isAdmin is in the token
       }
-      return token; // Return the updated token with user data
+      return token;
     },
 
     // Session callback to attach user info from JWT to session
@@ -122,11 +63,13 @@ const handler = NextAuth({
         session.user.id = token.id;
         session.user.email = token.email;
         session.user.name = token.name;
-        session.user.isAdmin = token.isAdmin;
+        session.user.isAdmin = token.isAdmin;  // Ensure isAdmin is added to the session
       }
-      return session; 
+      return session;
     },
   },
-});
+};
 
-export { handler as GET, handler as POST };
+// Export GET and POST methods as named exports
+export const GET = (req, res) => NextAuth(req, res, authOptions);
+export const POST = (req, res) => NextAuth(req, res, authOptions);
