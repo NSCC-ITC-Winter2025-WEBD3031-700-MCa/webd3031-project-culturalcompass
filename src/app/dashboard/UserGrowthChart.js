@@ -4,7 +4,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 
 const UserGrowthChart = () => {
   const [data, setData] = useState([]);
-  const [averageUserCount, setAverageUserCount] = useState(0); // State for the average count
+  const [averageUserCount, setAverageUserCount] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -12,32 +12,36 @@ const UserGrowthChart = () => {
         const response = await axios.get('/api/user');
         const users = response.data.users;
 
-        // Process data to get user count per day
+        const currentMonth = new Date().getMonth();
+        const currentYear = new Date().getFullYear();
+        const startDate = new Date(currentYear, currentMonth, 1);
+        const endDate = new Date(currentYear, currentMonth + 1, 0);
+
         const userCounts = users.reduce((acc, user) => {
-          const date = new Date(user.createdAt).toISOString().split('T')[0];
-          acc[date] = (acc[date] || 0) + 1;
+          const userDate = new Date(user.createdAt);
+          if (userDate >= startDate && userDate <= endDate) {
+            const dateStr = userDate.toISOString().split('T')[0]; // Keep full date format
+            acc[dateStr] = (acc[dateStr] || 0) + 1;
+          }
           return acc;
         }, {});
 
-        // Generate a range of dates from the earliest to the latest date
         const allDates = [];
-        const startDate = new Date(Math.min(...users.map(user => new Date(user.createdAt))));
-        const endDate = new Date(); // Current date
-
         let prevCount = 0;
-        let totalUserCount = 0; // To calculate total user count
+        let totalUserCount = 0;
+
         for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-          const dateStr = d.toISOString().split('T')[0];
-          const count = userCounts[dateStr] || prevCount; // Use previous count if no users on the current date
-          allDates.push({ date: dateStr, count: count });
-          totalUserCount += count; // Add count to total user count
-          prevCount = count; // Store current count to use as previous for the next iteration
+          const fullDateStr = d.toISOString().split('T')[0]; // Full date for lookup
+          const displayDateStr = fullDateStr.slice(5); // Only MM-DD for display
+          
+          const count = userCounts[fullDateStr] || prevCount;
+          allDates.push({ date: displayDateStr, count: count });
+
+          totalUserCount += count;
+          prevCount = count;
         }
 
-        // Calculate the average user count
-        const average = totalUserCount / allDates.length;
-        setAverageUserCount(average); // Update state with the calculated average
-
+        setAverageUserCount(totalUserCount / allDates.length);
         setData(allDates);
       } catch (error) {
         console.error('Error fetching users:', error);
@@ -48,16 +52,18 @@ const UserGrowthChart = () => {
   }, []);
 
   return (
-    <div className="w-full max-w-4xl">
-    
-
-      <ResponsiveContainer width="100%" height={400}>
-        <LineChart data={data}>
+    <div className="w-full">
+      <ResponsiveContainer width="100%" height={450}>
+        <LineChart 
+          data={data} 
+          margin={{ left: 30, right: 30, bottom: 60 }} // Spacing fix
+        >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis 
             dataKey="date" 
-            tick={{ angle: -45, textAnchor: 'end' }} // Rotate the timestamps to avoid overlap
-            interval={0} // Show all timestamps
+            tick={{ angle: -45, textAnchor: 'end' }} 
+            interval={0} 
+            height={60} 
           />
           <YAxis />
           <Tooltip />
