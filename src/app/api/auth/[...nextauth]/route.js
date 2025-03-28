@@ -4,9 +4,11 @@ import GoogleProvider from 'next-auth/providers/google';
 import GitHubProvider from 'next-auth/providers/github';
 import bcrypt from 'bcryptjs';
 import { PrismaClient } from '@prisma/client';
-
+ 
 const prisma = new PrismaClient();
-
+ 
+ 
+ 
 export const authOptions = {
   site: process.env.NEXTAUTH_URL || 'http://localhost:3000',
   providers: [
@@ -21,7 +23,8 @@ export const authOptions = {
       clientId: process.env.GITHUB_ID,
       clientSecret: process.env.GITHUB_SECRET,
     }),
-    // Credentials Provider
+ 
+    // Credentials Provider (Custom SignIn)
     CredentialsProvider({
       name: 'credentials',
       credentials: {
@@ -32,43 +35,41 @@ export const authOptions = {
         if (!credentials?.email || !credentials?.password) {
           throw new Error('Email and password are required');
         }
-
+ 
         // Check if the user exists in the database by email
         const existingUser = await prisma.user.findUnique({
           where: { email: credentials.email },
         });
-
+ 
         if (!existingUser) {
-          throw new Error('User not found. Please sign up first.');
+          throw new Error('User not found.');
         }
-
+ 
         // If user exists, compare the password hash
         const isValidPassword = await bcrypt.compare(credentials.password, existingUser.password);
         if (!isValidPassword) {
-          throw new Error('Invalid Password');
+          throw new Error('Invalid Login.');
         }
-
-        // Return user info including isAdmin
+ 
+        // Return existing user info if login is successful
         return { id: existingUser.id, email: existingUser.email, name: existingUser.name, isAdmin: existingUser.isAdmin };
       },
     }),
   ],
   session: {
-    strategy: 'jwt',
+    strategy: 'jwt', // Use JWT for session strategy
   },
   callbacks: {
-
     // SignIn callback for OAuth providers (Google, GitHub)
     async signIn({ account, profile }) {
       if (account.provider === 'google') {
-        const google_id = profile.sub; // Google ID from profile
+        const google_id = profile.sub;
  
         const existingUser = await prisma.user.findUnique({
           where: { google_id },
         });
  
         if (!existingUser) {
-          // Optionally, you can create a new user here for the first time logging in with Google
           await prisma.user.create({
             data: {
               email: profile.email,
@@ -82,14 +83,13 @@ export const authOptions = {
       }
  
       if (account.provider === 'github') {
-        const github_id = profile.id; // GitHub ID from profile
+        const github_id = profile.id;
  
         const existingUser = await prisma.user.findUnique({
           where: { github_id },
         });
  
         if (!existingUser) {
-          // Optionally, you can create a new user here for the first time logging in with GitHub
           await prisma.user.create({
             data: {
               email: profile.email,
@@ -102,7 +102,7 @@ export const authOptions = {
         }
       }
  
-      return true; // Return true to allow the sign-in process
+      return true;
     },
  
     // JWT callback to include user info in the token
@@ -111,24 +111,24 @@ export const authOptions = {
         token.id = user.id;
         token.email = user.email;
         token.name = user.name;
-        token.isAdmin = user.isAdmin || false;  // Ensure isAdmin is in the token
+        token.isAdmin = user.isAdmin || false;
       }
       return token;
     },
-
+ 
     // Session callback to attach user info from JWT to session
     async session({ session, token }) {
       if (token) {
         session.user.id = token.id;
         session.user.email = token.email;
         session.user.name = token.name;
-        session.user.isAdmin = token.isAdmin;  // Ensure isAdmin is added to the session
+        session.user.isAdmin = token.isAdmin;
       }
       return session;
     },
   },
 };
-
-// Export GET and POST methods as named exports
-export const GET = (req, res) => NextAuth(req, res, authOptions);
-export const POST = (req, res) => NextAuth(req, res, authOptions);
+ 
+const handler = NextAuth(authOptions);
+ 
+export { handler as GET, handler as POST };
