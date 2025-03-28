@@ -4,10 +4,12 @@ import GoogleProvider from 'next-auth/providers/google';
 import GitHubProvider from 'next-auth/providers/github';
 import bcrypt from 'bcryptjs';
 import { PrismaClient } from '@prisma/client';
-
+ 
 const prisma = new PrismaClient();
-
-const handler = NextAuth({
+ 
+ 
+ 
+export const authOptions = {
   site: process.env.NEXTAUTH_URL || 'http://localhost:3000',
   providers: [
     // Google Provider
@@ -15,13 +17,13 @@ const handler = NextAuth({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
-
+ 
     // GitHub Provider
     GitHubProvider({
       clientId: process.env.GITHUB_ID,
       clientSecret: process.env.GITHUB_SECRET,
     }),
-
+ 
     // Credentials Provider (Custom SignIn)
     CredentialsProvider({
       name: 'credentials',
@@ -31,24 +33,24 @@ const handler = NextAuth({
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error('Email and password are required'); // Provide proper error handling
+          throw new Error('Email and password are required');
         }
-
+ 
         // Check if the user exists in the database by email
         const existingUser = await prisma.user.findUnique({
           where: { email: credentials.email },
         });
-
+ 
         if (!existingUser) {
-          throw new Error('User not found. Please sign up first.');
+          throw new Error('User not found.');
         }
-
+ 
         // If user exists, compare the password hash
         const isValidPassword = await bcrypt.compare(credentials.password, existingUser.password);
         if (!isValidPassword) {
-          throw new Error('Invalid Password');
+          throw new Error('Invalid Login.');
         }
-
+ 
         // Return existing user info if login is successful
         return { id: existingUser.id, email: existingUser.email, name: existingUser.name, isAdmin: existingUser.isAdmin };
       },
@@ -61,14 +63,13 @@ const handler = NextAuth({
     // SignIn callback for OAuth providers (Google, GitHub)
     async signIn({ account, profile }) {
       if (account.provider === 'google') {
-        const google_id = profile.sub; // Google ID from profile
-
+        const google_id = profile.sub;
+ 
         const existingUser = await prisma.user.findUnique({
           where: { google_id },
         });
-
+ 
         if (!existingUser) {
-          // Optionally, you can create a new user here for the first time logging in with Google
           await prisma.user.create({
             data: {
               email: profile.email,
@@ -80,16 +81,15 @@ const handler = NextAuth({
           });
         }
       }
-
+ 
       if (account.provider === 'github') {
-        const github_id = profile.id; // GitHub ID from profile
-
+        const github_id = profile.id;
+ 
         const existingUser = await prisma.user.findUnique({
           where: { github_id },
         });
-
+ 
         if (!existingUser) {
-          // Optionally, you can create a new user here for the first time logging in with GitHub
           await prisma.user.create({
             data: {
               email: profile.email,
@@ -101,10 +101,10 @@ const handler = NextAuth({
           });
         }
       }
-
-      return true; // Return true to allow the sign-in process
+ 
+      return true;
     },
-
+ 
     // JWT callback to include user info in the token
     async jwt({ token, user }) {
       if (user) {
@@ -113,9 +113,9 @@ const handler = NextAuth({
         token.name = user.name;
         token.isAdmin = user.isAdmin || false;
       }
-      return token; // Return the updated token with user data
+      return token;
     },
-
+ 
     // Session callback to attach user info from JWT to session
     async session({ session, token }) {
       if (token) {
@@ -124,9 +124,11 @@ const handler = NextAuth({
         session.user.name = token.name;
         session.user.isAdmin = token.isAdmin;
       }
-      return session; 
+      return session;
     },
   },
-});
-
+};
+ 
+const handler = NextAuth(authOptions);
+ 
 export { handler as GET, handler as POST };

@@ -25,6 +25,7 @@ export async function GET() {
         name: true,
         email: true,
         is_premium: true,
+        createdAt: true,
       },
     });
 
@@ -62,7 +63,7 @@ export async function POST(req: Request) {
 
     if (existingUserByEmail) {
       return NextResponse.json(
-        { success: false, field: 'email', message: "Email already exists" },
+        { success: false, field: 'email', message: "Invaild Email" },
         { status: 400 }
       );
     }
@@ -74,7 +75,7 @@ export async function POST(req: Request) {
 
     if (existingUserByName) {
       return NextResponse.json(
-        { success: false, field: 'name', message: "Name already exists" },
+        { success: false, field: 'name', message: "Invaild Name" },
         { status: 400 }
       );
     }

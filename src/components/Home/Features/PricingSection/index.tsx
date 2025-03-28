@@ -29,7 +29,7 @@ const PricingSection = () => {
     {
       name: "Premium",
       price: "$49.89",
-      priceId: "price_1R3Il8QQ6WgGmUw54ixVO56h", // Use your actual Price ID
+      priceId: "price_1R6v93BHsBjVIDJQ2cqEBePJ",
       items: [true, true, true, true, true, true, true],
     },
   ];
