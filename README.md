@@ -52,6 +52,11 @@ Then, install the project dependencies using pnpm
 ```bash
 pnpm install
 ```
+Also, run
+
+```bash
+npm install recharts
+```
 
 run the development server:
 
