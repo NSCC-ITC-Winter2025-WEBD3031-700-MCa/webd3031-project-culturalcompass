@@ -112,6 +112,7 @@ export const authOptions = {
         token.email = user.email;
         token.name = user.name;
         token.isAdmin = user.isAdmin || false;
+        token.isPremium = user.is_premium || false;
       }
       return token;
     },
@@ -123,6 +124,7 @@ export const authOptions = {
         session.user.email = token.email;
         session.user.name = token.name;
         session.user.isAdmin = token.isAdmin;
+        session.user.isPremium = token.isPremium;
       }
       return session;
     },
