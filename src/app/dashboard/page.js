@@ -19,14 +19,13 @@ export default async function DashboardPage() {
 
   if (!session) {
     return (
-      <div className="flex justify-center items-center h-screen bg-gray-100">
-        <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
+      <div className="flex justify-center items-center h-screen bg-gray-100 dark:bg-gray-800">
+        <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full dark:bg-gray-900 dark:text-white">
           <SignIn />
         </div>
       </div>
     );
   }
-
   // If user is not an admin, return Unauthorized message
   if (session.user?.isAdmin !== true) {
     return (
@@ -43,6 +42,8 @@ export default async function DashboardPage() {
       name: true,
       email: true,
       is_premium: true,
+      google_id: true,  
+      github_id: true
     },
   });
 

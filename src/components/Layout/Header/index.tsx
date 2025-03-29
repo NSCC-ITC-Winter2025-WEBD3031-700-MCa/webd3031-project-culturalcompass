@@ -49,6 +49,7 @@ const Header: React.FC = () => {
     window.addEventListener("scroll", handleScroll);
     document.addEventListener("mousedown", handleClickOutside);
     
+    
     return () => {
       window.removeEventListener("scroll", handleScroll);
       document.removeEventListener("mousedown", handleClickOutside);
@@ -76,7 +77,17 @@ const Header: React.FC = () => {
           {headerData.map((item, index) => (
             <HeaderLink key={index} item={item} />
           ))}
+
+          {/* Conditionally render the Dashboard link only for admins */}
+          {session?.user?.isAdmin && (
+          <li>
+            <Link href="/dashboard" className="text-black hover:text-blue-600 dark:text-white dark:hover:text-blue-400">
+              Dashboard
+            </Link>
+          </li>
+        )}
         </ul>
+
         <div className="flex items-center space-x-4">
           <button
             aria-label="Toggle theme"
