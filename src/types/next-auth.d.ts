@@ -1,4 +1,4 @@
-// types/next-auth.d.ts
+
 import NextAuth from "next-auth";
 
 declare module "next-auth" {
@@ -7,14 +7,14 @@ declare module "next-auth" {
       name?: string | null;
       email?: string | null;
       image?: string | null;
-      is_premium?: boolean;
+      isPremium?: boolean;
       isAdmin?: boolean;
       id?: string;
     };
   }
 
   interface User {
-    is_premium?: boolean;
+    isPremium?: boolean;
     isAdmin?: boolean;
     id?: string;
   }
