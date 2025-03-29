@@ -8,26 +8,36 @@ export default function Dashboard({ session, users }) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Handle any client-side logic here if necessary
     setLoading(false); // Assume data is ready after the first render
   }, []);
 
-  // Calculate average user count per day for a week (or any other period)
   const calculateAverageUserCount = () => {
     if (users.length === 0) return 0;
-    // Assuming a week is 7 days; adjust accordingly for different periods
     const userCount = users.length;
-    const days = 7; // You can change this to any other number if you want a different period
-    return (userCount / days).toFixed(2); // Calculate average
+    const days = 7; 
+    return (userCount / days).toFixed(2);
   };
 
-  // Get the current number of paying users
+  // Count paying (premium) users
   const getPayingUsersCount = () => {
-    const payingUsers = users.filter(user => user.is_premium); // Filter users who are paying (is_premium = true)
-    return payingUsers.length;
+    return users.filter(user => user.is_premium).length;
   };
 
-  // Handle loading and error states
+  // Count basic (non-premium) users
+  const getBasicUsersCount = () => {
+    return users.filter(user => !user.is_premium).length;
+  };
+
+  const getGoogleUsersCount = () => {
+    return users.filter(user => user.google_id && user.google_id !== "" && user.google_id !== "null").length;
+  };
+
+  const getGitHubUsersCount = () => {
+    return users.filter(user => user.github_id && user.github_id !== "" && user.github_id !== "null").length;
+  };
+  
+  
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -41,90 +51,88 @@ export default function Dashboard({ session, users }) {
       <div className="container mx-auto lg:max-w-screen-xl md:max-w-screen-md lg:px-0 px-4 mt-12">
         <br />
         <h2 className="text-[30px] leading-[3rem] text-midnight_text dark:text-white font-bold mb-9 mt-16">
-          Welcome to the Admin Dashboard, {session.user?.name} 🎉
+          Welcome to the Admin Dashboard!, {session.user?.name} 🎉
         </h2>
 
         <div className="grid grid-cols-12 gap-7 mt-12">
-          {/* First Column */}
           <div className="lg:col-span-6 col-span-12 rounded-3xl bg-white dark:bg-darklight p-8 sm:ps-8 ps-4 relative shadow-2xl">
             <div className="relative">
               <div className="text-white py-2 px-4 rounded-full mb-4 inline-block">
-                <h3>Users List</h3>
-                <table className="min-w-full table-auto">
-                  <thead className="border-b-2 border-black dark:border-white">
-                    <tr>
-                      <th className="py-2 px-4 text-left"><b>Name</b></th>
-                      <th className="py-2 px-4 text-left"><b>Email</b></th>
-                      <th className="py-2 px-4 text-left"><b>Type</b></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {users.length > 0 ? (
-                      users.map((user, index) => (
-                        <tr key={index} className="border-b-2 border-gray-300 dark:border-gray-700">
-                          <td className="py-2 px-4">{user.name}</td>
-                          <td className="py-2 px-4">{user.email}</td>
-                          <td className="py-2 px-4">{user.is_premium ? 'Premium' : 'Free'}</td>
-                        </tr>
-                      ))
-                    ) : (
+                <h3 className="text-black dark:text-white">Users List</h3>
+                <br />
+                <div className="overflow-y-auto max-h-96">
+                  <table className="min-w-full table-auto">
+                    <thead className="border-b-2 border-black dark:border-white">
                       <tr>
-                        <td colSpan={2} className="py-2 px-4 text-center">
-                          No users found.
-                        </td>
+                        <th className="py-2 px-4 text-left text-black dark:text-white"><b>Name</b></th>
+                        <th className="py-2 px-4 text-left text-black dark:text-white"><b>Email</b></th>
+                        <th className="py-2 px-4 text-left text-black dark:text-white"><b>Type</b></th>
                       </tr>
-                    )}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {users.length > 0 ? (
+                        users.slice(0, 20).map((user, index) => (
+                          <tr key={index} className="border-b-2 border-gray-300 dark:border-gray-700">
+                            <td className="py-2 px-4 text-black dark:text-white">{user.name}</td>
+                            <td className="py-2 px-4 text-black dark:text-white">{user.email}</td>
+                            <td className="py-2 px-4 text-black dark:text-white">{user.is_premium ? 'Premium' : 'Free'}</td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan={3} className="py-2 px-4 text-center text-black dark:text-white">
+                            No users found.
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Second Column */}
           <div className="lg:col-span-6 col-span-12 flex flex-col gap-7">
-            <div className="lg:col-span-6 col-span-12 rounded-3xl bg-white dark:bg-darklight p-8 sm:ps-8 ps-4 relative shadow-2xl">
-              <h3>User Growth Over Time</h3>
-              <UserGrowthChart />
-              <br />
+            <div className="relative rounded-3xl bg-white dark:bg-darklight p-8 sm:ps-8 ps-4 shadow-2xl">
+              <h3 className='mb-10 text-black dark:text-white'>Users Stats</h3>
+              <h3 className="font-semibold text-midnight_text dark:text-white">Average Users Per Day 👤</h3>
+              <p className="text-midnight_text dark:text-white mb-4">
+                {users.length > 0 ? `${calculateAverageUserCount()} users/day` : "No users available."}
+              </p>
+
+              <hr className="border-b-2 border-black dark:border-white" />
+              <h3 className="font-semibold text-midnight_text dark:text-white mt-4">Premium Users ✈️</h3>
+              <p className="text-midnight_text dark:text-white mb-4">
+                {users.length > 0 ? `${getPayingUsersCount()} premium users` : "No users available."}
+              </p>
+              
+              <hr className="border-b-2 border-black dark:border-white" />
+              <h3 className="font-semibold text-midnight_text dark:text-white mt-4">Basic Users 🚲</h3>
+              <p className="text-midnight_text dark:text-white mb-4">
+                {users.length > 0 ? `${getBasicUsersCount()} basic users` : "No users available."}
+              </p>
+              
+              <hr className="border-b-2 border-black dark:border-white" />
+              <h3 className="font-semibold text-midnight_text dark:text-white mt-4">Google Users 🌍</h3>
+              <p className="text-midnight_text dark:text-white mb-4">
+                {users.length > 0 ? `${getGoogleUsersCount()} Google users` : "No users available."}
+              </p>
+
+              <hr className="border-b-2 border-black dark:border-white" />
+              <h3 className="font-semibold text-midnight_text dark:text-white mt-4">Github Users 🐙</h3>
+              <p className="text-midnight_text dark:text-white mb-4">
+                {users.length > 0 ? `${getGitHubUsersCount()} GitHub users` : "No users available."}
+              </p>
+
+
             </div>
+          </div>
 
-            <div className="grid grid-cols-1 gap-7">
-              {/* Third Column - Average User Count */}
-              <div className="relative rounded-3xl bg-white dark:bg-darklight p-8 sm:ps-8 ps-4 shadow-2xl">
-                <div className="text-white py-2 px-4 rounded-full mb-4 inline-block">
-                  <h3 className="font-semibold text-midnight_text dark:text-white">
-                    Average Users 👤
-                  </h3>
-                  <p className="text-midnight_text dark:text-white mb-4">
-                    {/* Display the average user count here */}
-                    {users.length > 0 ? (
-                      `${calculateAverageUserCount()} users/day`
-                    ) : (
-                      "No users available."
-                    )}
-                  </p>
-                </div>
-
-<hr className="border-b-2 border-black dark:border-white"></hr>
-<br></br>
-
-                <div className="text-white py-2 px-4 rounded-full mb-4 inline-block">
-                  <h3 className="font-semibold text-midnight_text dark:text-white">
-                    Premium Users 💳
-                  </h3>
-                  <p className="text-midnight_text dark:text-white mb-4">
-                    {/* Display the number of paying users */}
-                    {users.length > 0 ? (
-                      `${getPayingUsersCount()} premium users`
-                    ) : (
-                      "No users available."
-                    )}
-                  </p>
-                </div>
-
-
-
-              </div>
+          <div className="col-span-12 w-full mt-7">
+            <div className="rounded-3xl bg-white dark:bg-darklight p-8 sm:ps-8 ps-4 relative shadow-2xl">
+              <h3 className="text-black dark:text-white">User Growth Chart For March</h3>
+              <br />
+              <UserGrowthChart />
             </div>
           </div>
         </div>
