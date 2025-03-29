@@ -7,14 +7,14 @@ declare module "next-auth" {
       name?: string | null;
       email?: string | null;
       image?: string | null;
-      isPremium?: boolean;
+      is_premium?: boolean;
       isAdmin?: boolean;
       id?: string;
     };
   }
 
   interface User {
-    isPremium?: boolean;
+    is_premium?: boolean;
     isAdmin?: boolean;
     id?: string;
   }
