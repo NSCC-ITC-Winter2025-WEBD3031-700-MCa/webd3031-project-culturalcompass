@@ -75,8 +75,8 @@ export const Countriess = [
         "traditional_dress_image":"/images/traditionaldress/india.png",
         "traditional_food": "Biryani, Dosa, Butter Chicken",
         "traditional_food_image": [
-          "/images/food/india.png",
-          "/images/food/india2.png",
+          "/images/food/indian.png",
+          "/images/food/indian2.png",
         ],
         "people":"The people of India are incredibly diverse, representing a wide array of cultures, languages, religions, and traditions. India is home to over 1.4 billion people, making it one of the most populous countries in the world, with more than 2,000 distinct ethnic groups and hundreds of languages spoken across the nation. This diversity is reflected in daily life, from the colorful festivals and rituals to the wide variety of regional foods, clothing, and customs. Family plays a central role in Indian society, with strong values of respect, unity, and care for elders. The concept of community is also important, and it is common for people to have close-knit social networks that extend beyond immediate family to include extended relatives, friends, and neighbors. Religion is deeply woven into the fabric of Indian life, with Hinduism, Islam, Christianity, Sikhism, and many other faiths coexisting peacefully and influencing cultural practices, holidays, and celebrations. Indians are known for their resilience, warmth, and hospitality, often making visitors feel like part of the family. Education is highly valued, and there is a strong emphasis on academic achievement and career advancement. Despite the challenges posed by economic inequality and rapid urbanization, the people of India maintain a strong sense of pride in their country’s history, arts, and traditions. Whether in bustling cities like Mumbai and Delhi or peaceful rural villages, the people of India are a reflection of the country’s dynamic and ever-evolving identity.",
         "traditional_activities": "Yoga, Festivals like Diwali & Holi, Classical Dance",
