@@ -61,32 +61,33 @@ export default function Dashboard({ session, users }) {
                 <h3 className="text-black dark:text-white">Users List</h3>
                 <br />
                 <div className="overflow-y-auto max-h-96">
-                  <table className="min-w-full table-auto">
-                    <thead className="border-b-2 border-black dark:border-white">
-                      <tr>
-                        <th className="py-2 px-4 text-left text-black dark:text-white"><b>Name</b></th>
-                        <th className="py-2 px-4 text-left text-black dark:text-white"><b>Email</b></th>
-                        <th className="py-2 px-4 text-left text-black dark:text-white"><b>Type</b></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {users.length > 0 ? (
-                        users.slice(0, 20).map((user, index) => (
-                          <tr key={index} className="border-b-2 border-gray-300 dark:border-gray-700">
-                            <td className="py-2 px-4 text-black dark:text-white">{user.name}</td>
-                            <td className="py-2 px-4 text-black dark:text-white">{user.email}</td>
-                            <td className="py-2 px-4 text-black dark:text-white">{user.is_premium ? 'Premium' : 'Free'}</td>
-                          </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td colSpan={3} className="py-2 px-4 text-center text-black dark:text-white">
-                            No users found.
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
+                <table className="min-w-full table-auto">
+  <thead className="border-b-2 border-black">
+    <tr>
+      <th className="py-2 px-4 text-left"><b>Name</b></th>
+      <th className="py-2 px-4 text-left"><b>Email</b></th>
+      <th className="py-2 px-4 text-left"><b>Type</b></th>
+    </tr>
+  </thead>
+  <tbody className="max-h-96 overflow-y-scroll block">
+    {users.length > 0 ? (
+      users.map((user, index) => (
+        <tr key={index} className="border-b-2 border-gray-300">
+          <td className="py-2 px-4">{user.name}</td>
+          <td className="py-2 px-4">{user.email}</td>
+          <td className="py-2 px-4">{user.is_premium ? 'Premium' : 'Free'}</td>
+        </tr>
+      ))
+    ) : (
+      <tr>
+        <td colSpan={3} className="py-2 px-4 text-center">
+          No users found.
+        </td>
+      </tr>
+    )}
+  </tbody>
+</table>
+
                 </div>
               </div>
             </div>
