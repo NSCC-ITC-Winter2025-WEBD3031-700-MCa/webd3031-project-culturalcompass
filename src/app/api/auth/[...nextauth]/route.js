@@ -242,12 +242,20 @@ export const authOptions = {
 
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
-        token.email = user.email;
-        token.name = user.name;
-        token.isAdmin = user.isAdmin || false;
-        token.isPremium = user.isPremium || false;
+        // Fetch the user from the database again (if needed)
+        const dbUser = await prisma.user.findUnique({
+          where: { id: user.id },
+          select: { id: true, email: true, name: true, is_premium: true, isAdmin: true },
+        });
+    
+        // Set the token values from the DB user
+        token.id = dbUser.id;
+        token.email = dbUser.email;
+        token.name = dbUser.name;
+        token.isAdmin = dbUser.isAdmin || false;
+        token.is_premium = dbUser.is_premium || false; // Ensure correct is_premium value
       }
+    
       return token;
     },
 
@@ -257,7 +265,7 @@ export const authOptions = {
         session.user.email = token.email;
         session.user.name = token.name;
         session.user.isAdmin = token.isAdmin;
-        session.user.isPremium = token.isPremium;
+        session.user.is_premium = token.is_premium;
       }
       return session;
     },

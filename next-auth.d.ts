@@ -8,7 +8,8 @@ declare module "next-auth" {
       id: string;
       email: string;
       name: string;
-      isAdmin: boolean; // Ensure isAdmin is included
+      isAdmin: boolean;
+      is_premium:boolean; // Ensure isAdmin is included
     };
   }
 }
@@ -19,5 +20,6 @@ declare module "next-auth/jwt" {
     email: string;
     name: string;
     isAdmin: boolean;
+    is_premium:boolean; 
   }
 }
