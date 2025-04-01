@@ -9,7 +9,7 @@ declare module "next-auth" {
       email: string;
       name: string;
       isAdmin: boolean;
-      is_premium:boolean; // Ensure isAdmin is included
+      is_premium:boolean; 
     };
   }
 }

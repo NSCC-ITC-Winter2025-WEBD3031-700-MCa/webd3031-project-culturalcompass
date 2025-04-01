@@ -184,7 +184,7 @@ const ShowCountries = () => {
     if (status === "authenticated" && session) {
       console.log('User is authenticated. Checking is_premium...');
       // Check if is_premium exists in session and log it
-      const userIsPremium = session.user?.is_premium;
+      const userIsPremium = session.user.is_premium;
       console.log('User is premium:', userIsPremium); // <-- Check if the is_premium value is correct
 
       setIsPremium(userIsPremium || false);
