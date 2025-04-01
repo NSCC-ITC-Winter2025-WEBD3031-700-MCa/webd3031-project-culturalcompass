@@ -211,6 +211,11 @@ const Header: React.FC = () => {
           {headerData.map((item, index) => (
             <MobileHeaderLink key={index} item={item} />
           ))}
+           {session?.user?.isAdmin && (
+            <Link href="/dashboard" className="text-black hover:text-blue-600 dark:text-white dark:hover:text-blue-400">
+              Dashboard
+            </Link>
+        )}
           <div className="mt-4 flex flex-col space-y-4 w-full">
             {!session ? (
               <>
