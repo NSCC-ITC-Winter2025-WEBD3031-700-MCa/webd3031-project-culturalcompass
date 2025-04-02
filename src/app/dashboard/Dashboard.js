@@ -11,6 +11,8 @@ export default function Dashboard({ session, users }) {
     setLoading(false); // Assume data is ready after the first render
   }, []);
 
+  const currentMonth = new Date().toLocaleString('default', { month: 'long' });
+
   const calculateAverageUserCount = () => {
     if (users.length === 0) return 0;
     const userCount = users.length;
@@ -62,30 +64,32 @@ export default function Dashboard({ session, users }) {
                 <br />
                 <div className="overflow-y-auto max-h-96">
                 <table className="min-w-full table-auto">
-                  <thead className="border-b-2 border-black dark:border-white">
-                    <tr>
-                      <th className="py-2 px-4 text-left"><b>Name</b></th>
-                      <th className="py-2 px-4 text-left"><b>Email</b></th>
-                      <th className="py-2 px-4 text-left"><b>Type</b></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {users.length > 0 ? (
-                      users.map((user, index) => (
-                        <tr key={index} className="border-b-2 border-gray-300">
-                          <td className="py-2 px-4">{user.name}</td>
-                          <td className="py-2 px-4">{user.email}</td>
-                          <td className="py-2 px-4">{user.is_premium ? 'Premium' : 'Free'}</td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan={3} className="py-2 px-4 text-center">
-                          No users found.
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
+                <thead className="border-b-2 border-black dark:border-white">
+                <tr>
+                  <th className="py-2 px-4 text-left dark:text-white text-black"><b>Name</b></th>
+                  <th className="py-2 px-4 text-left dark:text-white text-black"><b>Email</b></th>
+                  <th className="py-2 px-4 text-left dark:text-white text-black"><b>Type</b></th>
+                </tr>
+              </thead>
+
+              <tbody>
+  {users.length > 0 ? (
+    users.map((user, index) => (
+      <tr key={index} className="border-b-2 border-gray-300">
+        <td className="py-2 px-4 dark:text-white text-black">{user.name}</td>
+        <td className="py-2 px-4 dark:text-white text-black">{user.email}</td>
+        <td className="py-2 px-4 dark:text-white text-black">{user.is_premium ? 'Premium' : 'Free'}</td>
+      </tr>
+    ))
+  ) : (
+    <tr>
+      <td colSpan={3} className="py-2 px-4 text-center dark:text-white text-black">
+        No users found.
+      </td>
+    </tr>
+  )}
+</tbody>
+
                 </table>
 
                 </div>
@@ -131,7 +135,7 @@ export default function Dashboard({ session, users }) {
 
           <div className="col-span-12 w-full mt-7">
             <div className="rounded-3xl bg-white dark:bg-darklight p-8 sm:ps-8 ps-4 relative shadow-2xl">
-              <h3 className="text-black dark:text-white">User Growth Chart For March</h3>
+              <h3 className="text-black dark:text-white">User Growth Chart For {currentMonth}</h3>
               <br />
               <UserGrowthChart />
             </div>
