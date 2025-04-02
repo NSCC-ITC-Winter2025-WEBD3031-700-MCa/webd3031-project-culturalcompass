@@ -1,9 +1,9 @@
 import { buffer } from 'micro';
 import Stripe from 'stripe';
-import { prisma } from '@/lib/prisma'; // Ensure Prisma is correctly set up
+import { PrismaClient } from '@prisma/client'; // Ensure Prisma is correctly set up
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY); // Initialize Stripe with your secret key
-
+const prisma = new PrismaClient();
 // Disable body parsing for the webhook to handle raw body data
 export const config = {
   api: {
