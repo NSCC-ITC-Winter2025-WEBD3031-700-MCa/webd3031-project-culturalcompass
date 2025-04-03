@@ -29,7 +29,7 @@ const PricingSection = () => {
     {
       name: "Premium",
       price: "$49.89",
-      priceId: "price_1R6v93BHsBjVIDJQ2cqEBePJ",
+      priceId: "price_1R9ddEB0TWaxswqweXtUYvYr",
       items: [true, true, true, true, true, true, true],
     },
   ];
