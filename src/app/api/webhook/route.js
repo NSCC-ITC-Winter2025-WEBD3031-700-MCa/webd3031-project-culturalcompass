@@ -31,7 +31,8 @@ export default async function handler(req, res) {
     console.log('✅ Verified event:', event.type);
   } catch (err) {
     console.error('❌ Webhook signature verification failed:', err.message);
-    return res.status(400).send(Webhook Error: ${err.message});
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+
   }
  
   // Handle successful checkout session completion
@@ -45,7 +46,7 @@ export default async function handler(req, res) {
         where: { email },
         data: { is_premium: true },
       });
-      console.log(🎉 Upgraded user ${email} to premium);
+      console.log(`🎉 Upgraded user ${email} to premium`);
     } catch (error) {
       console.error('❌ Prisma update failed:', error.message);
     }
