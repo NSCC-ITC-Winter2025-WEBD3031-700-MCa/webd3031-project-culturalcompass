@@ -6,6 +6,7 @@ const UserGrowthChart = () => {
   const [data, setData] = useState([]);
   const [averageUserCount, setAverageUserCount] = useState(0);
   const [currentUserCount, setCurrentUserCount] = useState(0);
+  const [chartHeight, setChartHeight] = useState(450); // Initial height
 
   // Function to fetch user data
   const fetchData = async () => {
@@ -17,11 +18,17 @@ const UserGrowthChart = () => {
       // Set the total user count (current number of users in the database)
       setCurrentUserCount(users.length);
 
-      // Calculate the start and end date for the current month
+      // Get the current month and year
       const currentMonth = new Date().getMonth();
       const currentYear = new Date().getFullYear();
-      const startDate = new Date(currentYear, currentMonth, 1);
-      const endDate = new Date(currentYear, currentMonth + 1, 0);
+      const startDate = new Date(currentYear, currentMonth, 1); // Start of the current month
+      const endDate = new Date(currentYear, currentMonth + 1, 0); // End of the current month
+
+      // Calculate the number of users created before the 1st of the current month
+      const initialUserCount = users.filter(user => {
+        const userDate = new Date(user.createdAt);
+        return userDate < startDate;
+      }).length;
 
       // Reduce the users to count them per day in the current month
       const userCounts = users.reduce((acc, user) => {
@@ -35,7 +42,7 @@ const UserGrowthChart = () => {
       }, {});
 
       const allDates = [];
-      let prevCount = 0;
+      let prevCount = initialUserCount; // Start with the count of users before the 1st of April
       let totalUserCount = 0;
 
       // Get today's date to filter out future dates
@@ -68,6 +75,11 @@ const UserGrowthChart = () => {
       // Calculate average user count
       setAverageUserCount(totalUserCount / allDates.length);
       setData(allDates);
+
+      // Dynamically adjust the chart height based on the maximum user count
+      const maxUserCount = Math.max(...allDates.map(item => item.count));
+      // Update the chart height based on the max user count (increase height proportionally)
+      setChartHeight(450 + maxUserCount * 2); // You can adjust the multiplier to suit your needs
     } catch (error) {
       console.error('Error fetching users:', error);
     }
@@ -78,18 +90,12 @@ const UserGrowthChart = () => {
     fetchData();
   }, []);
 
-  // Function to handle new user creation
-  const handleNewUserCreation = async () => {
-    try {
-      // Create a new user (this is a mock, replace with actual API request)
-      await axios.post('/api/user', { /* user data */ });
+  // Get the maximum user count from the data to dynamically set Y-Axis domain
+  const maxCount = Math.max(...data.map(item => item.count));
+  const yAxisDomain = [0, maxCount + Math.ceil(maxCount * 0.1)]; // Add 10% buffer to max value
 
-      // After creating a new user, re-fetch the data to update the chart
-      fetchData();
-    } catch (error) {
-      console.error('Error creating user:', error);
-    }
-  };
+  // Calculate the tick step
+  const yTickStep = Math.ceil(maxCount / 5); // You can adjust this divisor to control how many ticks are displayed
 
   return (
     <div className="w-full">
@@ -97,8 +103,8 @@ const UserGrowthChart = () => {
         {/* Display the current number of users */}
         <h5>Current Number of Users: {currentUserCount}</h5>
       </div>
-      
-      <ResponsiveContainer width="100%" height={450}>
+
+      <ResponsiveContainer width="100%" height={chartHeight}>
         <LineChart 
           data={data} 
           margin={{ left: 30, right: 30, bottom: 60 }} // Spacing fix
@@ -110,7 +116,10 @@ const UserGrowthChart = () => {
             interval={0} 
             height={60} 
           />
-          <YAxis />
+          <YAxis 
+            domain={yAxisDomain} 
+            ticks={Array.from({ length: Math.floor(maxCount / yTickStep) + 1 }, (_, i) => i * yTickStep)}
+          />
           <Tooltip />
           <Line type="monotone" dataKey="count" stroke="#8884d8" />
         </LineChart>
