@@ -36,21 +36,32 @@ export default async function handler(req, res) {
   }
  
   // Handle successful checkout session completion
-  if (event.type === 'checkout.session.completed') {
-    const session = event.data.object;
-    const email = session.customer_email;
- 
-    try {
-      // Update user to premium status in Prisma
+  // Handle checkout session completion (both successful and async succeeded)
+if (event.type === 'checkout.session.completed' || event.type === 'checkout.session.async_payment_succeeded') {
+  const session = event.data.object;
+  const email = session.customer_email;
+
+  // Continue with the logic to update user data in the database
+  try {
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (user) {
+      // Update user to premium status
       await prisma.user.update({
         where: { email },
         data: { is_premium: true },
       });
       console.log(`🎉 Upgraded user ${email} to premium`);
-    } catch (error) {
-      console.error('❌ Prisma update failed:', error.message);
+    } else {
+      console.log(`❌ No user found with email: ${email}`);
     }
+  } catch (error) {
+    console.error('❌ Prisma update failed:', error.message);
+    res.status(500).send(`Database Update Error: ${error.message}`);
   }
+}
  
   // Respond with success
   res.json({ received: true });
