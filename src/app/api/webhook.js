@@ -61,7 +61,6 @@ if (event.type === 'checkout.session.completed' || event.type === 'checkout.sess
     res.status(500).send(`Database Update Error: ${error.message}`);
   }
 }
- 
   // Respond with success
   res.json({ received: true });
 }
