@@ -1,63 +1,56 @@
 import { buffer } from 'micro';
 import Stripe from 'stripe';
-import { PrismaClient } from '@prisma/client'; // Ensure Prisma is correctly set up
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY); // Initialize Stripe with your secret key
+import { PrismaClient } from '@prisma/client';
+ 
+// Stripe and Prisma setup with the correct API version
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+  apiVersion: '2023-10-16',  // Correct API version from Stripe Dashboard
+});
 const prisma = new PrismaClient();
-// Disable body parsing for the webhook to handle raw body data
+ 
+// Disable body parsing for Stripe webhook
 export const config = {
   api: {
     bodyParser: false,
   },
 };
-
-const handler = async (req, res) => {
-  const sig = req.headers['stripe-signature']; // Stripe signature for security
-  const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET; // Secret from Stripe Dashboard
-
+ 
+export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).end('Method Not Allowed');
+  }
+ 
+  const sig = req.headers['stripe-signature'];
+  const buf = await buffer(req);
+ 
   let event;
-
+ 
   try {
-    // Read the raw body from the request
-    const body = await buffer(req);
-    
-    // Construct the event using the raw body and signature
-    event = stripe.webhooks.constructEvent(body, sig, endpointSecret);
+    // Stripe webhook signature verification
+    event = stripe.webhooks.constructEvent(buf, sig, process.env.STRIPE_WEBHOOK_SECRET);
+    console.log('✅ Verified event:', event.type);
   } catch (err) {
-    console.error('Error verifying webhook signature:', err.message);
-    return res.status(400).send(`Webhook error: ${err.message}`);
+    console.error('❌ Webhook signature verification failed:', err.message);
+    return res.status(400).send(Webhook Error: ${err.message});
   }
-
-  // Handle the event
-  switch (event.type) {
-    case 'checkout.session.completed':
-      const session = event.data.object;
-      const userEmail = session.customer_email;
-
-      // Example: Update user status in your database
-      try {
-        const user = await prisma.user.update({
-          where: { email: userEmail },
-          data: { is_premium: true }, // Mark the user as premium after payment
-        });
-        console.log('User marked as premium:', user);
-      } catch (err) {
-        console.error('Error updating database:', err.message);
-      }
-      break;
-
-    // Handle other events if needed, for example, payment intent succeeded:
-    case 'payment_intent.succeeded':
-      const paymentIntent = event.data.object;
-      console.log(`PaymentIntent for ${paymentIntent.amount_received} was successful!`);
-      break;
-
-    default:
-      console.log(`Unhandled event type: ${event.type}`);
+ 
+  // Handle successful checkout session completion
+  if (event.type === 'checkout.session.completed') {
+    const session = event.data.object;
+    const email = session.customer_email;
+ 
+    try {
+      // Update user to premium status in Prisma
+      await prisma.user.update({
+        where: { email },
+        data: { is_premium: true },
+      });
+      console.log(🎉 Upgraded user ${email} to premium);
+    } catch (error) {
+      console.error('❌ Prisma update failed:', error.message);
+    }
   }
-
-  // Acknowledge receipt of the event
-  res.status(200).send('Event received');
-};
-
-export default handler;
+ 
+  // Respond with success
+  res.json({ received: true });
+}
