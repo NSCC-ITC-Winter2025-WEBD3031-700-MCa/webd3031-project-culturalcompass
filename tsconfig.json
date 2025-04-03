@@ -33,7 +33,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
-, "src/app/success/page.js", "src/app/dashboard/page.tsx", "src/app/api/webhook/route.js"  ],
+, "src/app/success/page.js", "src/app/dashboard/page.tsx", "src/app/api/webhook/handler.js"  ],
   "exclude": [
     "node_modules"
   ]
