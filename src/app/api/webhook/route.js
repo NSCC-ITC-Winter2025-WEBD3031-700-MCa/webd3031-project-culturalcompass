@@ -10,7 +10,7 @@ const prisma = new PrismaClient();
 // Disable body parser for Stripe webhook
 export const config = {
   api: {
-    bodyParser: false, // Disable body parsing to allow for raw body data
+    bodyParser: false, 
   },
 };
 
