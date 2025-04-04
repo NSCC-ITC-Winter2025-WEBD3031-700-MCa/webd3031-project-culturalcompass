@@ -1,4 +1,5 @@
-import { buffer } from 'micro';
+// app/api/webhook/route.js
+import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { PrismaClient } from '@prisma/client';
  
@@ -7,53 +8,75 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 });
 const prisma = new PrismaClient();
  
-export const config = { api: { bodyParser: false } };
- 
 export async function POST(req) {
+  const signature = req.headers.get('stripe-signature');
   try {
-    const sig = req.headers.get('stripe-signature');
-    const buf = await buffer(req);
+    // Get raw body as text
+    const rawBody = await req.text();
+    // Verify webhook signature
     const event = stripe.webhooks.constructEvent(
-      buf,
-      sig,
+      rawBody,
+      signature,
       process.env.STRIPE_WEBHOOK_SECRET
     );
  
-    console.log('✅ Verified event:', event.type);
- 
-    // Handle successful payments
-    if (event.type === 'checkout.session.completed' || 
-        event.type === 'checkout.session.async_payment_succeeded') {
+    // Handle checkout session completion
+    if (event.type === 'checkout.session.completed') {
       const session = event.data.object;
       if (!session?.customer_email) {
-        throw new Error('Missing customer email in session');
+        throw new Error('Missing customer email in Stripe session');
       }
  
-      const user = await prisma.user.findUnique({
-        where: { email: session.customer_email },
-      });
- 
-      if (!user) {
-        throw new Error(`User not found: ${session.customer_email}`);
-      }
- 
-      await prisma.user.update({
+      // Update user in database
+      const updatedUser = await prisma.user.update({
         where: { email: session.customer_email },
         data: { is_premium: true },
       });
-      console.log(`🎉 Upgraded ${session.customer_email} to premium`);
+ 
+      if (!updatedUser) {
+        throw new Error(`User not found: ${session.customer_email}`);
+      }
+ 
+      console.log(`✅ Upgraded ${session.customer_email} to premium`);
     }
  
-    return Response.json({ received: true });
-  } catch (err) {
-    console.error('❌ Webhook error:', err.message);
-    return new Response(`Webhook Error: ${err.message}`, {
-      status: err.message.includes('Signature') ? 400 : 500
-    });
+    return NextResponse.json(
+      { success: true, message: 'Webhook processed' },
+      { status: 200 }
+    );
+ 
+  } catch (error) {
+    console.error('❌ Webhook error:', error.message);
+    return NextResponse.json(
+      { 
+        success: false,
+        error: error.message,
+        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      },
+      { status: error.message.includes('Signature') ? 400 : 500 }
+    );
   }
 }
  
-// Block other methods
-export function GET() { return Response.error('Method Not Allowed', { status: 405 }) }
-export function PUT() { return Response.error('Method Not Allowed', { status: 405 }) }
-export function DELETE() { return Response.error('Method Not Allowed', { status: 405 }) }
+// Block all other HTTP methods
+export function GET() {
+  return NextResponse.json(
+    { error: 'Method Not Allowed' },
+    { status: 405 }
+  );
+}
+ 
+export function PUT() {
+  return NextResponse.json(
+    { error: 'Method Not Allowed' },
+    { status: 405 }
+  );
+}
+ 
+export function DELETE() {
+  return NextResponse.json(
+    { error: 'Method Not Allowed' },
+    { status: 405 }
+  );
+}
+ 
