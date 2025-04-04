@@ -108,15 +108,22 @@ export const authOptions = {
     // JWT callback to include user info in the token
     async jwt({ token, user }) {
       if (user) {
+        // Fetch the latest user data from the database to ensure is_premium is up-to-date
+        const updatedUser = await prisma.user.findUnique({
+          where: { email: user.email },
+        });
+
+        if (updatedUser) {
+          token.is_premium = updatedUser.is_premium;
+        }
         token.id = user.id;
         token.email = user.email;
         token.name = user.name;
-        token.isAdmin = user.isAdmin || false;
-        token.is_premium = user.is_premium || false;
+        token.isAdmin = user.isAdmin;
       }
       return token;
     },
- 
+
     // Session callback to attach user info from JWT to session
     async session({ session, token }) {
       if (token) {
@@ -124,7 +131,7 @@ export const authOptions = {
         session.user.email = token.email;
         session.user.name = token.name;
         session.user.isAdmin = token.isAdmin;
-        session.user.is_premium = token.is_premium;
+        session.user.is_premium = token.is_premium; // Ensure is_premium is included in the session
       }
       return session;
     },
