@@ -7,8 +7,6 @@ import { PrismaClient } from '@prisma/client';
  
 const prisma = new PrismaClient();
  
- 
- 
 export const authOptions = {
   site: process.env.NEXTAUTH_URL || 'http://localhost:3000',
   providers: [
@@ -112,7 +110,7 @@ export const authOptions = {
         const updatedUser = await prisma.user.findUnique({
           where: { email: user.email },
         });
-
+ 
         if (updatedUser) {
           token.is_premium = updatedUser.is_premium;
         }
@@ -123,7 +121,7 @@ export const authOptions = {
       }
       return token;
     },
-
+ 
     // Session callback to attach user info from JWT to session
     async session({ session, token }) {
       if (token) {
@@ -139,5 +137,4 @@ export const authOptions = {
 };
  
 const handler = NextAuth(authOptions);
- 
 export { handler as GET, handler as POST };
