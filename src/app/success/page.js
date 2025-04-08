@@ -1,38 +1,21 @@
-'use client'; // Ensure this is a Client Component
 
-import { useSession } from 'next-auth/react';
+'use client';  
+
 import { useEffect } from 'react';
+import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
-const PaymentSuccess = () => {
-  const { data: session, status } = useSession();
+export default function SuccessPage() {
   const router = useRouter();
 
   useEffect(() => {
-    if (status === 'authenticated') {
-      console.log('Session Data:', session); // Log session data for debugging
-
-      // After payment, check if user is premium. If not, refresh the session
-      if (!session.user.is_premium) {
-        fetch('/api/auth/session')  // Re-fetch the session to get the latest state
-          .then((res) => res.json())
-          .then((updatedSession) => {
-            if (updatedSession.user.is_premium) {
-              // If the user is now premium, redirect to the homepage
-              router.push('/');
-            } else {
-              console.log('User is not premium yet.');
-            }
-          })
-          .catch((err) => {
-            console.error('Error refreshing session:', err);
-          });
-      } else {
-        // If the user is premium, redirect to homepage
-        router.push('/');
-      }
-    }
-  }, [status, session, router]);
+    // Refresh the session after successful payment
+    signIn('credentials', { redirect: false }).then(() => {
+      // Optionally redirect to another page if needed
+      console.log('Session updated');
+      router.push('/');
+    });
+  }, [router]);
 
   return (
     <div className="text-center py-20">
@@ -40,6 +23,4 @@ const PaymentSuccess = () => {
         <p className="text-lg text-gray-600 mt-4">Thank you for your purchase.</p>
       </div>
   );
-};
-
-export default PaymentSuccess;
+}
