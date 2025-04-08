@@ -36,6 +36,14 @@ export async function POST(req) {
       if (!updatedUser) {
         throw new Error(`User not found: ${session.customer_email}`);
       }
+
+      //session return from here
+      const serverSession = await getServerSession(authOptions); 
+      console.log(serverSession);
+      if (serverSession?.user?.email === session.customer_email) {
+       
+        serverSession.user.is_premium = true;
+      }
  
       console.log(`✅ Upgraded ${session.customer_email} to premium`);
     }
