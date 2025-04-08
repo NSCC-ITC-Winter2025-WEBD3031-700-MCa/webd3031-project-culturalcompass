@@ -44,7 +44,6 @@ export async function POST(req) {
        
         serverSession.user.is_premium = true;
       }
- 
       console.log(`✅ Upgraded ${session.customer_email} to premium`);
     }
  
