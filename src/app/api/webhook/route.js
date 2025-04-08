@@ -40,11 +40,7 @@ export async function POST(req) {
       }
       console.log(`✅ Upgraded ${session.customer_email} to premium!`);
       
-      const updatedSession = await getServerSession(authOptions);
-      if (updatedSession?.user?.email === session.customer_email) {
-        updatedSession.user.is_premium = true;  
-        console.log(`✅ Session updated for ${session.customer_email}`);
-      }
+      await signIn('credentials', { email: session.customer_email });
     }
  
     return NextResponse.json(
