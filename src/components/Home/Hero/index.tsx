@@ -1,4 +1,5 @@
 "use client"; // Ensure that this component is client-side
+import React from 'react'; 
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation"; 
@@ -50,9 +51,9 @@ const Hero = () => {
               data-aos-delay="200"
               data-aos-duration="1000"
             >
-              <h4 className="text-midnight_text text-2xl font-bold dark:text-white">
+              <h2 className="text-midnight_text text-2xl font-bold dark:text-white">
                 Plan your Vacation
-              </h4>
+              </h2>
               <form onSubmit={handleSubmit}>
                 <div className="py-4 border-b border-border dark:border-dark_border">
                   <label htmlFor="destination" className="text-grey text-base font-normal">
