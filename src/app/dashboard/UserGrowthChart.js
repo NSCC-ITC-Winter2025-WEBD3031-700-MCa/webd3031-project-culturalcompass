@@ -33,53 +33,38 @@ const UserGrowthChart = () => {
       // Reduce the users to count them per day in the current month
       const userCounts = users.reduce((acc, user) => {
         const userDate = new Date(user.createdAt);
-        // We are only interested in users created in the current month
         if (userDate >= startDate && userDate <= endDate) {
           const dateStr = userDate.toISOString().split('T')[0]; // Full date format (YYYY-MM-DD)
-          acc[dateStr] = (acc[dateStr] || 0) + 1; // Increment count for that date
+          acc[dateStr] = (acc[dateStr] || 0) + 1;
         }
         return acc;
       }, {});
 
       const allDates = [];
-      let prevCount = initialUserCount; // Start with the count of users before the 1st of April
-      let totalUserCount = 0;
+      let totalUserCount = initialUserCount; // Start with the count of users before the 1st of April
 
-      // Get today's date to filter out future dates
       const todayStr = new Date().toISOString().split('T')[0];
 
       // Loop through each day of the current month and filter out future dates
       for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-        const fullDateStr = d.toISOString().split('T')[0]; // Full date for lookup (YYYY-MM-DD)
-        const displayDateStr = fullDateStr.slice(5); // Only MM-DD for display (to show on the chart)
+        const fullDateStr = d.toISOString().split('T')[0]; 
+        const displayDateStr = fullDateStr.slice(5); 
 
-        // Skip future days (we only want past days and today)
-        if (fullDateStr > todayStr) {
-          continue;
-        }
+        if (fullDateStr > todayStr) continue;
 
-        // Get the user count for the current day, falling back to previous count if no new users
-        const count = userCounts[fullDateStr] || prevCount;
+        const countForDay = userCounts[fullDateStr] || 0; // Count of users created on this day
+        totalUserCount += countForDay; // Add the daily new users to the total count
 
-        // If today, update it with the correct total user count
-        if (fullDateStr === todayStr) {
-          allDates.push({ date: displayDateStr, count: users.length });
-        } else {
-          allDates.push({ date: displayDateStr, count: count });
-        }
-
-        totalUserCount += count;
-        prevCount = count; // Set the previous count for next day aggregation
+        // Push the current day and the total count up until this day
+        allDates.push({ date: displayDateStr, count: totalUserCount });
       }
 
-      // Calculate average user count
       setAverageUserCount(totalUserCount / allDates.length);
       setData(allDates);
 
       // Dynamically adjust the chart height based on the maximum user count
       const maxUserCount = Math.max(...allDates.map(item => item.count));
-      // Update the chart height based on the max user count (increase height proportionally)
-      setChartHeight(450 + maxUserCount * 2); // You can adjust the multiplier to suit your needs
+      setChartHeight(450 + maxUserCount * 2); // Adjust multiplier as necessary
     } catch (error) {
       console.error('Error fetching users:', error);
     }
@@ -88,42 +73,34 @@ const UserGrowthChart = () => {
   // Fetch data initially on component mount
   useEffect(() => {
     fetchData();
+    const intervalId = setInterval(fetchData, 60000); // Refresh data every minute
+
+    return () => clearInterval(intervalId); // Clean up on unmount
   }, []);
 
-  // Get the maximum user count from the data to dynamically set Y-Axis domain
   const maxCount = Math.max(...data.map(item => item.count));
-  const yAxisDomain = [0, maxCount + Math.ceil(maxCount * 0.1)]; // Add 10% buffer to max value
-
-  // Calculate the tick step
-  const yTickStep = Math.ceil(maxCount / 5); // You can adjust this divisor to control how many ticks are displayed
+  const yAxisDomain = [0, maxCount + Math.ceil(maxCount * 0.1)];
+  const yTickStep = Math.ceil(maxCount / 5);
 
   return (
     <div className="w-full">
       <div className="mb-4">
-        {/* Display the current number of users */}
         <h5>Current Number of Users: {currentUserCount}</h5>
       </div>
 
-      <ResponsiveContainer width="100%" height={chartHeight}>
-        <LineChart 
-          data={data} 
-          margin={{ left: 30, right: 30, bottom: 60 }} // Spacing fix
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis 
-            dataKey="date" 
-            tick={{ angle: -45, textAnchor: 'end' }} 
-            interval={0} 
-            height={60} 
-          />
-          <YAxis 
-            domain={yAxisDomain} 
-            ticks={Array.from({ length: Math.floor(maxCount / yTickStep) + 1 }, (_, i) => i * yTickStep)}
-          />
-          <Tooltip />
-          <Line type="monotone" dataKey="count" stroke="#8884d8" />
-        </LineChart>
-      </ResponsiveContainer>
+      {data.length === 0 ? (
+        <div>No user data available for this month.</div>
+      ) : (
+        <ResponsiveContainer width="100%" height={chartHeight}>
+          <LineChart data={data} margin={{ left: 30, right: 30, bottom: 60 }}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="date" tick={{ angle: -45, textAnchor: 'end' }} interval={0} height={60} />
+            <YAxis domain={yAxisDomain} ticks={Array.from({ length: Math.floor(maxCount / yTickStep) + 1 }, (_, i) => i * yTickStep)} />
+            <Tooltip />
+            <Line type="monotone" dataKey="count" stroke="#8884d8" />
+          </LineChart>
+        </ResponsiveContainer>
+      )}
     </div>
   );
 };
