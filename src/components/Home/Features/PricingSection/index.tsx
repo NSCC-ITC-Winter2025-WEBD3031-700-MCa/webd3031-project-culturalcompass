@@ -40,25 +40,28 @@ const PricingSection = () => {
       signIn(); // Redirect user to sign-in page
       return;
     }
-  
-    if (!priceId) return; // Do nothing for free plan
-  
+
+    if (!priceId || session.user?.is_premium) {
+      // Prevent checkout if user is already premium or it's a free plan
+      return;
+    }
+
     const stripe = await stripePromise;
-  
+
     try {
       const response = await fetch("/api/checkout-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ priceId }),
       });
-  
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || "Failed to initiate checkout.");
       }
-  
+
       const sessionData = await response.json();
-  
+
       if (sessionData.url) {
         window.location.href = sessionData.url; // Redirect to Stripe Checkout
       } else {
@@ -68,7 +71,7 @@ const PricingSection = () => {
       const errorMessage = error instanceof Error ? error.message : "Something went wrong!";
       toast.error(errorMessage);
     }
-  };  
+  };
 
   return (
     <section className="relative py-24 bg-white dark:bg-darkmode">
@@ -79,11 +82,16 @@ const PricingSection = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 m-16">
           {plans.map((plan, index) => (
-            <div key={index} className="bg-white dark:bg-darklight rounded-3xl shadow-2xl p-8 text-center">
+            <div
+              key={index}
+              className="bg-white dark:bg-darklight rounded-3xl shadow-2xl p-8 text-center"
+            >
               <div className="bg-primary text-white py-2 px-4 rounded-full mb-4 inline-block">
                 <h3 className="text-2xl font-semibold dark:text-white">{plan.name}</h3>
               </div>
-              <p className="text-4xl font-bold text-midnight_text dark:text-white mb-4">{plan.price}</p>
+              <p className="text-4xl font-bold text-midnight_text dark:text-white mb-4">
+                {plan.price}
+              </p>
               <p className="text-lg text-gray-600 dark:text-gray-300 mb-6">One-time purchase</p>
 
               <ul className="list-disc list-inside mb-6 text-left text-gray-600 dark:text-gray-300">
@@ -98,13 +106,23 @@ const PricingSection = () => {
                   </li>
                 ))}
               </ul>
+
               {plan.name !== "Standard" && (
-                <button
-                  className="py-3 px-6 bg-primary hover:bg-blue-700 text-white rounded-lg"
-                  onClick={() => handleCheckout(plan.priceId)}
-                >
-                  {session ? "Purchase Now" : "Sign in to Purchase"}
-                </button>
+                session?.user?.is_premium ? (
+                  <button
+                    className="py-3 px-6 bg-green-500 cursor-not-allowed text-white rounded-lg"
+                    disabled
+                  >
+                    You are already Premium
+                  </button>
+                ) : (
+                  <button
+                    className="py-3 px-6 bg-primary hover:bg-blue-700 text-white rounded-lg"
+                    onClick={() => handleCheckout(plan.priceId)}
+                  >
+                    {session ? "Purchase Now" : "Sign in to Purchase"}
+                  </button>
+                )
               )}
             </div>
           ))}
@@ -115,4 +133,5 @@ const PricingSection = () => {
 };
 
 export default PricingSection;
+
 
